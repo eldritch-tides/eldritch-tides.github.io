@@ -34,6 +34,13 @@ body {
   line-height: 1.75;
   min-height: 100vh;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
+html {
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* ── Ocean noise background ─────────────────────────── */
@@ -60,6 +67,8 @@ body::after {
   );
   animation: drift 18s linear infinite;
   pointer-events: none;
+  overflow: hidden;
+  clip-path: inset(0);
 }
 @keyframes drift { from { transform: translateX(0); } to { transform: translateX(164px); } }
 
@@ -74,6 +83,9 @@ nav {
   background: rgba(6,8,16,0.92);
   border-bottom: 1px solid var(--border);
   backdrop-filter: blur(12px);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 .nav-brand {
   font-family: 'Cinzel Decorative', serif;
@@ -115,6 +127,9 @@ nav {
   text-align: center;
   padding: 80px 24px 60px;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .hero-sigil {
@@ -190,6 +205,8 @@ nav {
 section {
   padding: 96px 0 80px;
   border-top: 1px solid var(--border);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .section-eyebrow {
@@ -501,6 +518,8 @@ footer {
   .hero { padding: 70px 20px 50px; }
   .hero h1 { font-size: clamp(26px, 10vw, 44px); }
   .hero-sub { font-size: 9px; }
+  .hero p { font-size: 15px; padding: 0 4px; }
+  .hero-sigil { width: 70px; height: 70px; }
   .section-title { font-size: clamp(18px, 7vw, 28px); }
   .step { padding: 16px 18px; gap: 12px; }
   .mod-card { font-size: 13px; }
@@ -1251,15 +1270,17 @@ const observer = new IntersectionObserver(entries => {
 
 sections.forEach(s => observer.observe(s));
 
-// Subtle parallax on hero sigil
-const sigil = document.querySelector('.hero-sigil');
-document.addEventListener('mousemove', e => {
-  if (!sigil) return;
-  const cx = window.innerWidth/2, cy = window.innerHeight/2;
-  const dx = (e.clientX - cx) / cx * 8;
-  const dy = (e.clientY - cy) / cy * 8;
-  sigil.style.transform = `translate(${dx}px, ${dy}px)`;
-});
+// Subtle parallax on hero sigil (desktop only)
+if (window.innerWidth > 860) {
+  const sigil = document.querySelector('.hero-sigil');
+  document.addEventListener('mousemove', e => {
+    if (!sigil) return;
+    const cx = window.innerWidth/2, cy = window.innerHeight/2;
+    const dx = (e.clientX - cx) / cx * 8;
+    const dy = (e.clientY - cy) / cy * 8;
+    sigil.style.transform = `translate(${dx}px, ${dy}px)`;
+  });
+}
 </script>
 
 <script>

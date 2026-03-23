@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pirate Life — Eldritch Tides Mod</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>☠️</text></svg>">
+<style>
+:root {
+  --bg:        #07080b;
+  --bg2:       #0b0d12;
+  --ink:       #060709;
+  --paper:     #c8b890;
+  --gold:      #c8a040;
+  --gold-dim:  #6a4e18;
+  --red:       #c03020;
+  --red-dim:   #6a1810;
+  --red-glow:  rgba(192,48,32,0.18);
+  --navy:      #1a2848;
+  --navy-dim:  #0e1828;
+  --border:    rgba(200,160,64,0.15);
+  --border-red:rgba(192,48,32,0.25);
+  --fog:       rgba(180,200,210,0.04);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--paper);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.8;
+  overflow-x: hidden;
+}
+
+/* ── Background ──────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 120% 50% at 50% 100%, rgba(100,20,10,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 80% at 15% 20%, rgba(20,30,60,0.3) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 60% at 85% 70%, rgba(10,15,30,0.4) 0%, transparent 55%);
+}
+
+/* Animated diagonal scan lines */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: repeating-linear-gradient(
+    -8deg, transparent, transparent 60px,
+    rgba(192,48,32,0.018) 60px, rgba(192,48,32,0.018) 61px
+  );
+  animation: scan 20s linear infinite;
+}
+@keyframes scan { to { transform: translateX(120px); } }
+
+/* ── Nav ─────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px; height: 54px;
+  background: rgba(6,7,9,0.92);
+  border-bottom: 1px solid rgba(192,48,32,0.2);
+  backdrop-filter: blur(16px);
+}
+.nav-brand { font-family:'Cinzel Decorative',serif; font-size:12px; letter-spacing:0.18em; color:var(--gold); text-decoration:none; }
+.nav-back { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(200,184,154,0.3); text-decoration:none; transition:color 0.2s; }
+.nav-back:hover { color:var(--gold); }
+.nav-badge { font-family:'Share Tech Mono',monospace; font-size:10px; background:rgba(192,48,32,0.15); border:1px solid rgba(192,48,32,0.35); color:rgba(200,80,60,0.9); padding:3px 10px; border-radius:2px; letter-spacing:0.1em; }
+
+/* ── Hero ─────────────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 80px 24px 60px;
+  position: relative; z-index: 1;
+  overflow: hidden;
+}
+
+/* Animated skull canvas */
+#hero-canvas {
+  position: absolute; inset: 0; z-index: 0;
+  width: 100%; height: 100%;
+  opacity: 0.4;
+}
+
+.hero-content { position: relative; z-index: 1; }
+
+.hero-icon {
+  font-size: 72px; margin-bottom: 24px; display: block;
+  filter: drop-shadow(0 0 40px rgba(192,48,32,0.6));
+  animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100%{ transform:translateY(0) rotate(-2deg); }
+  50%    { transform:translateY(-14px) rotate(2deg); }
+}
+
+.hero h1 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(36px, 8vw, 88px);
+  font-weight: 700;
+  color: #e03020;
+  letter-spacing: 0.06em; line-height: 1.05;
+  text-shadow:
+    0 0 40px rgba(220,40,20,0.5),
+    0 0 120px rgba(220,40,20,0.2),
+    0 2px 4px rgba(0,0,0,0.9);
+  margin-bottom: 6px;
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+@keyframes glow-pulse {
+  0%,100%{ text-shadow: 0 0 40px rgba(220,40,20,0.5), 0 0 120px rgba(220,40,20,0.2), 0 2px 4px rgba(0,0,0,0.9); }
+  50%    { text-shadow: 0 0 60px rgba(220,40,20,0.8), 0 0 160px rgba(220,40,20,0.35), 0 2px 4px rgba(0,0,0,0.9); }
+}
+
+.hero-sub {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(10px, 1.5vw, 13px);
+  letter-spacing: 0.35em; text-transform: uppercase;
+  color: rgba(200,80,60,0.5); margin-bottom: 28px;
+}
+
+.hero-tagline {
+  font-size: clamp(16px, 2vw, 20px);
+  color: rgba(200,184,154,0.65);
+  font-style: italic; line-height: 1.9;
+  max-width: 540px; margin: 0 auto 44px;
+}
+
+.hero-badges {
+  display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+  margin-bottom: 0;
+}
+.badge {
+  padding: 8px 20px;
+  border-radius: 2px;
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.badge-red   { background:rgba(192,48,32,0.15); border:1px solid rgba(192,48,32,0.4); color:#e06040; }
+.badge-gold  { background:rgba(200,160,64,0.12); border:1px solid rgba(200,160,64,0.35); color:var(--gold); }
+.badge-navy  { background:rgba(26,40,72,0.4); border:1px solid rgba(40,60,120,0.4); color:rgba(140,170,255,0.7); }
+
+/* ── Section layout ──────────────────────────────────── */
+section {
+  position: relative; z-index: 1;
+  max-width: 1060px; margin: 0 auto;
+  padding: 96px 40px 80px;
+  border-top: 1px solid rgba(200,160,64,0.07);
+}
+.eyebrow {
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 0.38em; text-transform: uppercase;
+  color: var(--red); margin-bottom: 10px;
+}
+.section-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(20px, 4vw, 36px);
+  color: var(--gold); letter-spacing: 0.04em;
+  margin-bottom: 14px;
+}
+.section-lead {
+  max-width: 600px; font-style: italic;
+  color: rgba(200,184,154,0.6); font-size: 16px;
+  line-height: 1.9; margin-bottom: 56px;
+}
+
+/* ── Divider ─────────────────────────────────────────── */
+.divider {
+  display: flex; align-items: center; gap: 16px;
+  margin: 40px 0; opacity: 0.3;
+}
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--red-dim),transparent); }
+.divider span { font-size:14px; color:var(--red); }
+
+/* ── Wanted levels ────────────────────────────────────── */
+.wanted-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+.wanted-card {
+  background: rgba(10,12,18,0.8);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 20px 16px;
+  text-align: center;
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.wanted-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(192,48,32,0.06) 100%);
+  pointer-events: none;
+}
+.wanted-card:hover {
+  box-shadow: 0 0 30px rgba(192,48,32,0.12);
+}
+.wanted-card[data-level="1"] { border-color: rgba(200,160,64,0.3); }
+.wanted-card[data-level="2"] { border-color: rgba(220,120,20,0.35); }
+.wanted-card[data-level="3"] { border-color: rgba(220,80,20,0.4); }
+.wanted-card[data-level="4"] { border-color: rgba(200,30,20,0.45); }
+.wanted-card[data-level="5"] { border-color: rgba(200,20,10,0.6); box-shadow:0 0 20px rgba(200,20,10,0.1); }
+
+.wanted-stars { font-size: 16px; margin-bottom: 12px; letter-spacing: 2px; }
+.wanted-num {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 32px; line-height: 1;
+  margin-bottom: 16px;
+}
+.wanted-stat {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; color: rgba(200,184,154,0.45);
+  line-height: 2; text-align: left;
+}
+.wanted-stat strong { color: rgba(200,184,154,0.8); display:block; }
+.wanted-label {
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  margin-top: 14px; padding-top: 12px;
+  border-top: 1px solid rgba(200,160,64,0.08);
+}
+
+/* ── Navy ship showcase ───────────────────────────────── */
+.navy-showcase {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px; align-items: center;
+  margin-top: 8px;
+}
+
+#navy-canvas-wrap {
+  position: relative;
+  background: rgba(6,10,20,0.9);
+  border: 1px solid rgba(26,40,72,0.6);
+  border-radius: 6px;
+  overflow: hidden;
+  aspect-ratio: 1;
+}
+#navy-canvas {
+  width: 100%; height: 100%; display: block;
+}
+.canvas-label {
+  position: absolute; bottom: 14px; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Cinzel', serif; font-size: 9px;
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: rgba(140,170,255,0.4);
+}
+
+.navy-stats { display: flex; flex-direction: column; gap: 16px; }
+.navy-stat-row {
+  display: flex; flex-direction: column; gap: 6px;
+}
+.stat-label {
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(200,184,154,0.4);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.stat-label span { font-family:'Share Tech Mono',monospace; color:rgba(140,170,255,0.8); }
+.stat-bar {
+  height: 4px; background: rgba(200,184,154,0.06); border-radius: 2px;
+  overflow: hidden;
+}
+.stat-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, #1a2848, #4060c0);
+  transition: width 1s ease;
+}
+.stat-fill.red { background: linear-gradient(90deg, #6a1810, #c03020); }
+.stat-fill.gold { background: linear-gradient(90deg, var(--gold-dim), var(--gold)); }
+
+.navy-level-selector {
+  display: flex; gap: 8px; margin-bottom: 20px;
+}
+.lvl-btn {
+  padding: 6px 14px;
+  background: rgba(26,40,72,0.3);
+  border: 1px solid rgba(40,60,120,0.3);
+  border-radius: 2px; cursor: pointer;
+  font-family: 'Cinzel', serif; font-size: 10px;
+  letter-spacing: 0.15em; color: rgba(140,170,255,0.5);
+  transition: all 0.2s;
+}
+.lvl-btn.active, .lvl-btn:hover {
+  background: rgba(26,40,72,0.7);
+  border-color: rgba(40,60,120,0.7);
+  color: rgba(140,170,255,0.95);
+}
+.lvl-btn.active { box-shadow: 0 0 12px rgba(40,80,200,0.2); }
+
+/* ── Loot table ───────────────────────────────────────── */
+.loot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.loot-card {
+  background: rgba(10,12,18,0.8);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 20px 22px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.25s;
+}
+.loot-card:hover { border-color: rgba(200,160,64,0.35); }
+.loot-card::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200,160,64,0.3), transparent);
+  opacity: 0; transition: opacity 0.25s;
+}
+.loot-card:hover::after { opacity: 1; }
+.loot-icon { font-size: 28px; margin-bottom: 12px; }
+.loot-name {
+  font-family: 'Cinzel', serif; font-size: 13px;
+  letter-spacing: 0.08em; color: var(--gold); margin-bottom: 6px;
+}
+.loot-desc { font-size: 13px; color: rgba(200,184,154,0.6); line-height: 1.7; margin-bottom: 12px; }
+.loot-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; color: rgba(200,160,64,0.7);
+}
+.loot-tag {
+  display: inline-block; margin-top: 10px;
+  padding: 2px 8px;
+  background: rgba(192,48,32,0.1); border: 1px solid rgba(192,48,32,0.25);
+  border-radius: 2px; font-family: 'Share Tech Mono', monospace;
+  font-size: 9px; color: rgba(200,80,60,0.8); letter-spacing: 0.1em;
+}
+
+/* ── How to play ─────────────────────────────────────── */
+.steps {
+  counter-reset: step;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.step {
+  background: rgba(10,12,18,0.8);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 22px 24px;
+  counter-increment: step;
+  display: flex; gap: 18px; align-items: flex-start;
+}
+.step-num {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 28px; color: rgba(192,48,32,0.25);
+  line-height: 1; flex-shrink: 0; margin-top: -2px;
+}
+.step-num::before { content: counter(step); }
+.step h4 {
+  font-family: 'Cinzel', serif; font-size: 12px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 6px;
+}
+.step p { font-size: 13px; color: rgba(200,184,154,0.65); line-height: 1.7; }
+kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 28px; height: 22px; padding: 0 6px;
+  background: rgba(192,48,32,0.12);
+  border: 1px solid rgba(192,48,32,0.35); border-radius: 2px;
+  font-family: 'Share Tech Mono', monospace; font-size: 10px;
+  color: #e06040; white-space: nowrap;
+}
+
+/* ── Risk/reward meter ───────────────────────────────── */
+.risk-reward {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  margin-top: 8px;
+}
+.rr-panel {
+  background: rgba(10,12,18,0.8);
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 24px 26px;
+}
+.rr-panel.risk  { border-color: rgba(192,48,32,0.25); }
+.rr-panel.reward{ border-color: rgba(200,160,64,0.2); }
+.rr-header {
+  font-family: 'Cinzel', serif; font-size: 11px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
+}
+.rr-header.risk   { color: rgba(200,80,60,0.9); }
+.rr-header.reward { color: var(--gold); }
+.rr-item {
+  display: flex; gap: 12px; align-items: baseline;
+  padding: 8px 0; border-bottom: 1px solid rgba(200,184,154,0.05);
+  font-size: 13px; color: rgba(200,184,154,0.65);
+}
+.rr-item:last-child { border-bottom: none; }
+.rr-bullet { font-size: 10px; flex-shrink: 0; }
+.rr-panel.risk   .rr-bullet { color: var(--red); }
+.rr-panel.reward .rr-bullet { color: var(--gold); }
+
+/* ── Enable section ───────────────────────────────────── */
+.enable-box {
+  background: rgba(10,12,18,0.8);
+  border: 1px solid rgba(192,48,32,0.25); border-radius: 4px;
+  padding: 32px 36px; max-width: 640px;
+}
+pre {
+  font-family: 'Share Tech Mono', monospace; font-size: 13px;
+  background: rgba(4,5,8,0.95);
+  border: 1px solid rgba(200,160,64,0.12);
+  border-left: 3px solid var(--red-dim);
+  border-radius: 3px; padding: 18px 22px;
+  color: rgba(200,184,154,0.8); line-height: 1.75;
+  overflow-x: auto; margin: 16px 0;
+}
+.comment { color: rgba(120,140,120,0.6); }
+.str     { color: #c8a060; }
+.kw      { color: #7aadcc; }
+
+/* ── Footer ──────────────────────────────────────────── */
+footer {
+  position: relative; z-index: 1;
+  border-top: 1px solid rgba(192,48,32,0.1);
+  padding: 48px 40px; text-align: center;
+}
+.footer-text { font-family:'Cinzel',serif; font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:rgba(200,184,154,0.2); }
+
+@media (max-width: 768px) {
+  .wanted-grid { grid-template-columns: repeat(3,1fr); }
+  .navy-showcase, .steps, .risk-reward { grid-template-columns: 1fr; }
+  section { padding: 64px 24px 56px; }
+  nav { padding: 0 20px; }
+}
+@media (max-width: 480px) {
+  .wanted-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="hero-canvas"></canvas>
+
+<nav>
+  <a class="nav-brand" href="eldritch-tides-website.html">⚓ ELDRITCH TIDES</a>
+  <span class="nav-badge">MOD · v1.0.0</span>
+  <a class="nav-back" href="eldritch-tides-website.html">← Compendium</a>
+</nav>
+
+<!-- ── HERO ──────────────────────────────────────────── -->
+<div class="hero">
+  <div class="hero-content">
+    <span class="hero-icon">☠️</span>
+    <div class="hero-sub">Eldritch Tides · Mod</div>
+    <h1>Pirate Life</h1>
+    <p class="hero-tagline">You were never the one defending against pirates.<br>You were always meant to be one.</p>
+    <div class="hero-badges">
+      <span class="badge badge-red">☠ Raid Charter Ships</span>
+      <span class="badge badge-gold">★ Wanted Level 1–5</span>
+      <span class="badge badge-navy">⚓ Navy Pursuit</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── WANTED LEVELS ──────────────────────────────────── -->
+<section id="wanted">
+  <div class="eyebrow">The Admiralty's Ledger</div>
+  <div class="section-title">Wanted Levels</div>
+  <p class="section-lead">Every raid adds one star. Five stars draws the full force of the Admiralty. Survive long enough at ★★★★★ and you become legend — or wreckage.</p>
+
+  <div class="wanted-grid">
+
+    <div class="wanted-card" data-level="1">
+      <div class="wanted-stars" style="color:#c8a040">★☆☆☆☆</div>
+      <div class="wanted-num" style="color:#c8a040">★</div>
+      <div class="wanted-stat">
+        <strong>Navy ships</strong>1 pursuing
+        <strong>Spawn interval</strong>50s
+        <strong>Hull points</strong>90
+        <strong>Speed</strong>180 u/s
+        <strong>Fire cooldown</strong>3.5s
+        <strong>Bribe cost</strong>100 ⊕
+      </div>
+      <div class="wanted-label" style="color:#c8a040">Petty Pirate</div>
+    </div>
+
+    <div class="wanted-card" data-level="2">
+      <div class="wanted-stars" style="color:#e08020">★★☆☆☆</div>
+      <div class="wanted-num" style="color:#e08020">★★</div>
+      <div class="wanted-stat">
+        <strong>Navy ships</strong>1 pursuing
+        <strong>Spawn interval</strong>35s
+        <strong>Hull points</strong>110
+        <strong>Speed</strong>210 u/s
+        <strong>Fire cooldown</strong>3.0s
+        <strong>Bribe cost</strong>230 ⊕
+      </div>
+      <div class="wanted-label" style="color:#e08020">Known Raider</div>
+    </div>
+
+    <div class="wanted-card" data-level="3">
+      <div class="wanted-stars" style="color:#e05010">★★★☆☆</div>
+      <div class="wanted-num" style="color:#e05010">★★★</div>
+      <div class="wanted-stat">
+        <strong>Navy ships</strong>2 pursuing
+        <strong>Spawn interval</strong>22s
+        <strong>Hull points</strong>140
+        <strong>Speed</strong>245 u/s
+        <strong>Fire cooldown</strong>2.4s
+        <strong>Bribe cost</strong>460 ⊕
+      </div>
+      <div class="wanted-label" style="color:#e05010">Bounty Hunter Target</div>
+    </div>
+
+    <div class="wanted-card" data-level="4">
+      <div class="wanted-stars" style="color:#cc2020">★★★★☆</div>
+      <div class="wanted-num" style="color:#cc2020">★★★★</div>
+      <div class="wanted-stat">
+        <strong>Navy ships</strong>3 pursuing
+        <strong>Spawn interval</strong>14s
+        <strong>Hull points</strong>170
+        <strong>Speed</strong>275 u/s
+        <strong>Fire cooldown</strong>1.9s
+        <strong>Bribe cost</strong>780 ⊕
+      </div>
+      <div class="wanted-label" style="color:#cc2020">Admiralty Priority</div>
+    </div>
+
+    <div class="wanted-card" data-level="5">
+      <div class="wanted-stars" style="color:#ff2010">★★★★★</div>
+      <div class="wanted-num" style="color:#ff2010">★★★★★</div>
+      <div class="wanted-stat">
+        <strong>Navy ships</strong>4 pursuing
+        <strong>Spawn interval</strong>8s
+        <strong>Hull points</strong>210
+        <strong>Speed</strong>315 u/s
+        <strong>Fire cooldown</strong>1.4s
+        <strong>Bribe cost</strong>1,400 ⊕
+      </div>
+      <div class="wanted-label" style="color:#ff2010">ADMIRALTY BOUNTY</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── NAVY SHIP ───────────────────────────────────────── -->
+<section id="navy">
+  <div class="eyebrow">H.M.S. Pursuit</div>
+  <div class="section-title">The Navy Fleet</div>
+  <p class="section-lead">Navy ships are not pirates. They are purpose-built, professionally crewed, and entirely certain of their legal authority to sink you. They chase on sight, fire broadsides in pairs, and get faster and tougher with every star on your head.</p>
+
+  <div class="navy-showcase">
+
+    <!-- Live canvas -->
+    <div id="navy-canvas-wrap">
+      <canvas id="navy-canvas"></canvas>
+      <div class="canvas-label">H.M.S. Pursuit · Live Preview</div>
+    </div>
+
+    <!-- Stats panel -->
+    <div class="navy-stats">
+      <div class="navy-level-selector">
+        <button class="lvl-btn active" onclick="setNavyLevel(1)">★</button>
+        <button class="lvl-btn" onclick="setNavyLevel(2)">★★</button>
+        <button class="lvl-btn" onclick="setNavyLevel(3)">★★★</button>
+        <button class="lvl-btn" onclick="setNavyLevel(4)">★★★★</button>
+        <button class="lvl-btn" onclick="setNavyLevel(5)">★★★★★</button>
+      </div>
+
+      <div class="navy-stat-row">
+        <div class="stat-label">Hull Points <span id="stat-hp">90</span></div>
+        <div class="stat-bar"><div class="stat-fill red" id="bar-hp" style="width:43%"></div></div>
+      </div>
+      <div class="navy-stat-row">
+        <div class="stat-label">Speed <span id="stat-spd">180 u/s</span></div>
+        <div class="stat-bar"><div class="stat-fill" id="bar-spd" style="width:40%"></div></div>
+      </div>
+      <div class="navy-stat-row">
+        <div class="stat-label">Fire Rate <span id="stat-fire">3.5s cd</span></div>
+        <div class="stat-bar"><div class="stat-fill gold" id="bar-fire" style="width:28%"></div></div>
+      </div>
+      <div class="navy-stat-row">
+        <div class="stat-label">Max Ships <span id="stat-max">1</span></div>
+        <div class="stat-bar"><div class="stat-fill red" id="bar-max" style="width:20%"></div></div>
+      </div>
+      <div class="navy-stat-row">
+        <div class="stat-label">Spawn Interval <span id="stat-spawn">50s</span></div>
+        <div class="stat-bar"><div class="stat-fill" id="bar-spawn" style="width:100%"></div></div>
+      </div>
+
+      <div style="margin-top:8px;padding:14px 16px;background:rgba(10,12,18,0.6);border:1px solid rgba(40,60,120,0.3);border-radius:3px">
+        <div style="font-family:'Cinzel',serif;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(140,170,255,0.5);margin-bottom:8px">Tactics</div>
+        <ul style="font-size:12px;color:rgba(200,184,154,0.55);line-height:2;padding-left:16px">
+          <li>Chases immediately — no patrol phase like pirates</li>
+          <li>Fires two cannonballs per volley with spread</li>
+          <li>Deals 22 hull damage/s on ramming contact</li>
+          <li>Sinking one reduces your wanted level by 1 ★</li>
+          <li>Sinking reward: 140 + (level × 75) gold</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LOOT ───────────────────────────────────────────── -->
+<section id="loot">
+  <div class="eyebrow">The Plunder</div>
+  <div class="section-title">What You Take</div>
+  <p class="section-lead">Every raid pays out in gold. The more dangerous you are, the more you earn — but clearing your bounty costs even more. Risk scales with reward.</p>
+
+  <div class="loot-grid">
+
+    <div class="loot-card">
+      <div class="loot-icon">💰</div>
+      <div class="loot-name">Charter Plunder</div>
+      <div class="loot-desc">The core income of every raid. Scales with current wanted level — riskier captains earn more per ship taken.</div>
+      <div class="loot-value">90 – 220 ⊕ base · +28 ⊕ per wanted star</div>
+      <span class="loot-tag">per raid</span>
+    </div>
+
+    <div class="loot-card">
+      <div class="loot-icon">⚓</div>
+      <div class="loot-name">Navy Bounty</div>
+      <div class="loot-desc">Sink a Navy ship and collect the bounty — plus your wanted level drops by one star. High risk, high reward, and you get to feel good about it.</div>
+      <div class="loot-value">140 + (wanted level × 75) ⊕</div>
+      <span class="loot-tag">per navy kill</span>
+    </div>
+
+    <div class="loot-card">
+      <div class="loot-icon">📜</div>
+      <div class="loot-name">Forged Papers</div>
+      <div class="loot-desc">Appears in merchant stock at wanted ★★ and above. Clears one wanted star at 75% of the bribe rate. The merchant doesn't ask questions. Neither should you.</div>
+      <div class="loot-value">75% of current bribe cost</div>
+      <span class="loot-tag">merchant item</span>
+    </div>
+
+    <div class="loot-card">
+      <div class="loot-icon">🏛️</div>
+      <div class="loot-name">Harbourmaster Bribe</div>
+      <div class="loot-desc">Press <kbd>B</kbd> at any port to pay off one wanted star. Dismisses all active Navy ships instantly. Becomes extremely expensive at high wanted levels.</div>
+      <div class="loot-value">100 · 230 · 460 · 780 · 1,400 ⊕</div>
+      <span class="loot-tag">per star cleared</span>
+    </div>
+
+    <div class="loot-card">
+      <div class="loot-icon">⏳</div>
+      <div class="loot-name">Natural Decay</div>
+      <div class="loot-desc">At wanted ★ or ★★ with no Navy ships in pursuit, your bounty fades after 90 seconds of clean sailing. Go fishing. Wait it out. The sea is patient.</div>
+      <div class="loot-value">90 seconds · wanted 1–2 only</div>
+      <span class="loot-tag">passive</span>
+    </div>
+
+    <div class="loot-card">
+      <div class="loot-icon">🔁</div>
+      <div class="loot-name">Reload Cooldown</div>
+      <div class="loot-desc">You can't raid continuously — the crew needs 10 seconds between raids to recover. Use the time to deal with any Navy pursuit or reposition for the next target.</div>
+      <div class="loot-value">10 second cooldown</div>
+      <span class="loot-tag">mechanic</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── HOW TO PLAY ─────────────────────────────────────── -->
+<section id="howto">
+  <div class="eyebrow">The Pirate's Handbook</div>
+  <div class="section-title">How It Works</div>
+  <p class="section-lead">Five actions. One escalating threat. Endless greed.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num"></div>
+      <div>
+        <h4>Spot a Charter Ship</h4>
+        <p>Merchant vessels appear on the open sea. Sail close — within 300 units — until the hail prompt appears in the log. They won't run. Not yet.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div>
+        <h4>Press Q to Intercept</h4>
+        <p>Near a merchant, <kbd>Q</kbd> opens the intercept panel instead of the normal shop. Choose <strong>TRADE</strong> for the normal merchant experience, or <strong>RAID ☠</strong> to take everything.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div>
+        <h4>Collect the Plunder</h4>
+        <p>Gold is added instantly. The merchant ship sinks. Your wanted level rises by one star. The Navy has been notified. You have about 50 seconds before they arrive.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div>
+        <h4>Fight or Flee</h4>
+        <p>Use <kbd>C</kbd> to fire cannons at pursuing Navy ships. Sinking one gives bounty gold and drops your wanted level. Or just run — the Navy can't pursue indefinitely.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div>
+        <h4>Clear Your Bounty</h4>
+        <p>Dock at any port and press <kbd>B</kbd> to bribe the harbourmaster. Or find Forged Papers in merchant stock. Or wait — at ★★ and below, time clears your name.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num"></div>
+      <div>
+        <h4>Survive ★★★★★</h4>
+        <p>Four Navy ships, 8-second spawns, 1.4s fire rate. Your hull will not last long. At this point you are either committed or you're debris. There is no middle position.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── RISK / REWARD ──────────────────────────────────── -->
+<section id="risk">
+  <div class="eyebrow">The Captain's Calculus</div>
+  <div class="section-title">Risk vs. Reward</div>
+  <p class="section-lead">Every star you earn raises both what you take and what hunts you. The math never quite works out in your favour. That's the point.</p>
+
+  <div class="risk-reward">
+    <div class="rr-panel risk">
+      <div class="rr-header risk">⚠ Risks</div>
+      <div class="rr-item"><span class="rr-bullet">☠</span>Navy ships spawn faster at each star level</div>
+      <div class="rr-item"><span class="rr-bullet">☠</span>Each Navy ship is tougher and faster than the last tier</div>
+      <div class="rr-item"><span class="rr-bullet">☠</span>Bribe costs scale steeply — ★★★★★ costs 1,400 ⊕ per star</div>
+      <div class="rr-item"><span class="rr-bullet">☠</span>Navy ramming deals 22 hull damage per second on contact</div>
+      <div class="rr-item"><span class="rr-bullet">☠</span>10-second raid cooldown leaves you vulnerable mid-pursuit</div>
+      <div class="rr-item"><span class="rr-bullet">☠</span>Hull at zero ends the run — save is deleted</div>
+      <div class="rr-item"><span class="rr-bullet">☠</span>No natural decay above ★★ — must bribe or fight</div>
+    </div>
+    <div class="rr-panel reward">
+      <div class="rr-header reward">⊕ Rewards</div>
+      <div class="rr-item"><span class="rr-bullet">★</span>Raid gold scales with wanted level: +28 ⊕ per star</div>
+      <div class="rr-item"><span class="rr-bullet">★</span>Sinking Navy ships pays bounty + reduces wanted level</div>
+      <div class="rr-item"><span class="rr-bullet">★</span>Forged Papers available at ★★+ — cheaper than bribing</div>
+      <div class="rr-item"><span class="rr-bullet">★</span>Natural decay at ★1–2 means low-level piracy is nearly free</div>
+      <div class="rr-item"><span class="rr-bullet">★</span>Can still trade normally — Q panel offers both options</div>
+      <div class="rr-item"><span class="rr-bullet">★</span>Compatible with fishing, quests, and the Crabber Life mod</div>
+      <div class="rr-item"><span class="rr-bullet">★</span>Wanted HUD shows live star level — always know your status</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ENABLE ─────────────────────────────────────────── -->
+<section id="enable">
+  <div class="eyebrow">Set Sail</div>
+  <div class="section-title">Enable the Mod</div>
+  <p class="section-lead">One line. That's it.</p>
+
+  <div class="enable-box">
+    <p style="font-size:14px;color:rgba(200,184,154,0.6);margin-bottom:6px">Edit <code style="color:var(--gold);background:rgba(200,160,64,0.08);padding:1px 5px;border-radius:2px">mods/index.json</code> in your project folder:</p>
+    <pre>[<span class="str">"pirate-life"</span>]</pre>
+    <p style="font-size:14px;color:rgba(200,184,154,0.6);margin-bottom:6px;margin-top:16px">Or run alongside the Crabber Life mod — they're fully compatible:</p>
+    <pre>[<span class="str">"pirate-life"</span>, <span class="str">"crabber-life"</span>]
+<span class="comment">// Drop crab pots. Raid charter ships while you wait.
+// The crabs don't care about your wanted level.</span></pre>
+    <p style="font-size:13px;color:rgba(200,184,154,0.4);margin-top:16px">Then run <code style="color:rgba(200,184,154,0.6)">./serve.sh</code> (or <code style="color:rgba(200,184,154,0.6)">serve.bat</code> on Windows) and open <strong style="color:rgba(200,184,154,0.7)">http://localhost:8080</strong>.</p>
+  </div>
+</section>
+
+<footer>
+  <div style="font-size:28px;margin-bottom:12px;opacity:0.3">☠️</div>
+  <div class="footer-text">Pirate Life · Eldritch Tides Mod · v1.0.0</div>
+</footer>
+
+<script>
+// ── Hero canvas — animated cannonballs ───────────────────────────────────
+const heroCanvas = document.getElementById('hero-canvas');
+const hctx = heroCanvas.getContext('2d');
+let balls = [];
+
+function resizeHero(){
+  heroCanvas.width  = window.innerWidth;
+  heroCanvas.height = window.innerHeight;
+}
+resizeHero();
+window.addEventListener('resize', resizeHero);
+
+function spawnBall(){
+  const side = Math.random() < 0.5 ? -1 : 1;
+  balls.push({
+    x: side < 0 ? -10 : heroCanvas.width+10,
+    y: Math.random() * heroCanvas.height,
+    vx: side * (1.5 + Math.random()*2.5),
+    vy: (Math.random()-0.5) * 1.5,
+    r: 2 + Math.random()*3,
+    trail: [],
+    life: 1,
+  });
+}
+
+setInterval(spawnBall, 800);
+
+function animHero(){
+  hctx.clearRect(0,0, heroCanvas.width, heroCanvas.height);
+  balls.forEach((b,i) => {
+    b.trail.push({x:b.x, y:b.y});
+    if(b.trail.length > 18) b.trail.shift();
+    b.x += b.vx; b.y += b.vy;
+    b.vy += 0.02;
+    // Trail
+    b.trail.forEach((pt, ti) => {
+      const a = (ti/b.trail.length) * 0.12;
+      hctx.beginPath();
+      hctx.arc(pt.x, pt.y, b.r * (ti/b.trail.length), 0, Math.PI*2);
+      hctx.fillStyle = `rgba(200,80,40,${a})`;
+      hctx.fill();
+    });
+    // Ball
+    hctx.beginPath();
+    hctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+    hctx.fillStyle = 'rgba(60,60,70,0.8)';
+    hctx.fill();
+    hctx.beginPath();
+    hctx.arc(b.x-b.r*0.3, b.y-b.r*0.3, b.r*0.35, 0, Math.PI*2);
+    hctx.fillStyle = 'rgba(120,120,130,0.5)';
+    hctx.fill();
+    // Remove off screen
+    if(b.x < -50 || b.x > heroCanvas.width+50 || b.y > heroCanvas.height+50){
+      balls.splice(i, 1);
+    }
+  });
+  requestAnimationFrame(animHero);
+}
+animHero();
+
+// ── Navy ship canvas ─────────────────────────────────────────────────────
+const nc = document.getElementById('navy-canvas');
+const nctx = nc.getContext('2d');
+let nw = 0, nh = 0;
+let shipAngle = 0, shipX = 0, shipY = 0;
+let cannonFlash = 0;
+let shotTimer = 0;
+const shots = [];
+
+function resizeNavy(){
+  const wrap = document.getElementById('navy-canvas-wrap');
+  nw = nc.width  = wrap.clientWidth;
+  nh = nc.height = wrap.clientHeight;
+  shipX = nw/2; shipY = nh/2;
+}
+resizeNavy();
+window.addEventListener('resize', resizeNavy);
+
+let currentNavyLevel = 1;
+const NAVY_HP    = [0, 90, 110, 140, 170, 210];
+const NAVY_SPEED = [0, 180, 210, 245, 275, 315];
+const NAVY_FIRE  = [0, 3.5, 3.0, 2.4, 1.9, 1.4];
+const NAVY_MAX   = [0, 1, 1, 2, 3, 4];
+const NAVY_SPAWN = [0, 50, 35, 22, 14, 8];
+
+function setNavyLevel(level){
+  currentNavyLevel = level;
+  document.querySelectorAll('.lvl-btn').forEach((b,i) => {
+    b.classList.toggle('active', i+1 === level);
+  });
+  const hp    = NAVY_HP[level];
+  const spd   = NAVY_SPEED[level];
+  const fire  = NAVY_FIRE[level];
+  const max   = NAVY_MAX[level];
+  const spawn = NAVY_SPAWN[level];
+
+  document.getElementById('stat-hp').textContent    = hp;
+  document.getElementById('stat-spd').textContent   = spd + ' u/s';
+  document.getElementById('stat-fire').textContent  = fire + 's cd';
+  document.getElementById('stat-max').textContent   = max;
+  document.getElementById('stat-spawn').textContent = spawn + 's';
+
+  document.getElementById('bar-hp').style.width    = (hp/210*100) + '%';
+  document.getElementById('bar-spd').style.width   = (spd/315*100) + '%';
+  document.getElementById('bar-fire').style.width  = ((3.5-fire)/2.1*100) + '%';
+  document.getElementById('bar-max').style.width   = (max/4*100) + '%';
+  document.getElementById('bar-spawn').style.width = (spawn/50*100) + '%';
+}
+
+let lastNT = null;
+function animNavy(ts){
+  if(!lastNT) lastNT = ts;
+  const dt = Math.min((ts-lastNT)/1000, 0.05);
+  lastNT = ts;
+
+  nctx.clearRect(0, 0, nw, nh);
+
+  // Ocean bg
+  const og = nctx.createRadialGradient(nw/2,nh/2,0,nw/2,nh/2,Math.max(nw,nh)*0.8);
+  og.addColorStop(0,'rgba(14,22,40,0.95)');
+  og.addColorStop(1,'rgba(4,6,12,0.98)');
+  nctx.fillStyle = og;
+  nctx.fillRect(0,0,nw,nh);
+
+  // Wave lines
+  const t = ts/1000;
+  nctx.strokeStyle = 'rgba(30,60,90,0.15)'; nctx.lineWidth = 1;
+  for(let row=0; row<nh; row+=22){
+    nctx.beginPath();
+    for(let xi=0; xi<nw; xi+=4){
+      const y = row + Math.sin(xi*0.03 + t*0.5 + row*0.02)*3;
+      xi===0 ? nctx.moveTo(xi,y) : nctx.lineTo(xi,y);
+    }
+    nctx.stroke();
+  }
+
+  // Fire cooldown indicator
+  shotTimer -= dt;
+  if(shotTimer <= 0){
+    shotTimer = NAVY_FIRE[currentNavyLevel];
+    cannonFlash = 0.3;
+    // Spawn cannonballs from both sides
+    [-1,1].forEach(side => {
+      const ang = side < 0 ? Math.PI : 0;
+      shots.push({ x: shipX + Math.cos(shipAngle+ang)*30, y: shipY + Math.sin(shipAngle+ang)*30,
+                   vx: Math.cos(shipAngle+ang)*4, vy: Math.sin(shipAngle+ang)*4, life:1 });
+    });
+  }
+  cannonFlash = Math.max(0, cannonFlash - dt*3);
+
+  // Update and draw shots
+  for(let i=shots.length-1;i>=0;i--){
+    const s = shots[i];
+    s.x += s.vx; s.y += s.vy;
+    s.life -= dt*0.8;
+    if(s.life <= 0 || s.x<0||s.x>nw||s.y<0||s.y>nh){ shots.splice(i,1); continue; }
+    nctx.beginPath();
+    nctx.arc(s.x, s.y, 3, 0, Math.PI*2);
+    nctx.fillStyle = `rgba(60,60,70,${s.life*0.9})`;
+    nctx.fill();
+    nctx.beginPath();
+    nctx.arc(s.x-0.8, s.y-0.8, 1, 0, Math.PI*2);
+    nctx.fillStyle = `rgba(140,140,150,${s.life*0.5})`;
+    nctx.fill();
+  }
+
+  // Ship gentle drift
+  shipAngle += dt * 0.18;
+  shipX = nw/2 + Math.sin(t*0.3)*20;
+  shipY = nh/2 + Math.cos(t*0.4)*12;
+
+  // Draw ship
+  nctx.save();
+  nctx.translate(shipX, shipY);
+  nctx.rotate(shipAngle);
+
+  const scale = Math.min(nw,nh) / 280;
+  nctx.scale(scale, scale);
+
+  // Hull
+  nctx.fillStyle = cannonFlash > 0.1 ? `rgba(100,130,255,${cannonFlash*0.6+0.3})` : '#1a2848';
+  nctx.beginPath();
+  nctx.ellipse(0, 0, 50, 24, 0, 0, Math.PI*2);
+  nctx.fill();
+
+  // Gold trim
+  nctx.fillStyle = cannonFlash > 0.1 ? '#ffffff' : '#c8a030';
+  nctx.fillRect(-44, -7, 88, 14);
+
+  // Gunports
+  nctx.fillStyle = '#0a1428';
+  [-22, 0, 22].forEach(ox => {
+    nctx.fillRect(ox-6, -10, 12, 9);
+    nctx.fillRect(ox-6,  1, 12, 9);
+  });
+
+  // Cannon flash
+  if(cannonFlash > 0){
+    [-44, 44].forEach(side => {
+      const g = nctx.createRadialGradient(side, 0, 0, side, 0, 20);
+      g.addColorStop(0, `rgba(255,180,60,${cannonFlash})`);
+      g.addColorStop(1, 'transparent');
+      nctx.fillStyle = g;
+      nctx.beginPath();
+      nctx.arc(side, 0, 20, 0, Math.PI*2);
+      nctx.fill();
+    });
+  }
+
+  // Mast
+  nctx.fillStyle = '#243050';
+  nctx.fillRect(-5, -70, 10, 70);
+  nctx.strokeStyle = '#243050'; nctx.lineWidth = 3;
+  nctx.beginPath(); nctx.moveTo(0,-55); nctx.lineTo(0,-95); nctx.stroke();
+
+  // Sails
+  nctx.fillStyle = 'rgba(220,225,240,0.12)';
+  nctx.beginPath();
+  nctx.moveTo(0, -70); nctx.lineTo(42, -42); nctx.lineTo(0, -14); nctx.closePath();
+  nctx.fill();
+  nctx.beginPath();
+  nctx.moveTo(0, -70); nctx.lineTo(-42, -42); nctx.lineTo(0, -14); nctx.closePath();
+  nctx.fill();
+
+  // Navy ensign
+  nctx.fillStyle = 'rgba(220,228,248,0.9)';
+  nctx.fillRect(2, -70, 36, 22);
+  nctx.fillStyle = '#c02020';
+  nctx.fillRect(14, -70, 8, 22);
+  nctx.fillRect(2, -62, 36, 8);
+
+  // HP bar (scaled to level)
+  const hpFrac = NAVY_HP[currentNavyLevel] / 210;
+  nctx.fillStyle = 'rgba(0,0,0,0.5)';
+  nctx.fillRect(-55, -95, 110, 10);
+  const hpColor = hpFrac > 0.6 ? '#2255cc' : hpFrac > 0.3 ? '#cc6622' : '#cc1111';
+  nctx.fillStyle = hpColor;
+  nctx.fillRect(-55, -95, 110*hpFrac, 10);
+
+  // Label
+  nctx.fillStyle = 'rgba(140,170,255,0.6)';
+  nctx.font = 'bold 14px "Courier New"';
+  nctx.textAlign = 'center';
+  nctx.fillText('H.M.S.', 0, -102);
+
+  nctx.restore();
+  requestAnimationFrame(animNavy);
+}
+requestAnimationFrame(animNavy);
+</script>
+
+</body>
+</html>

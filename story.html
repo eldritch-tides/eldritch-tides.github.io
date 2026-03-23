@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pale Meridian — Eldritch Tides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+DW+Pica:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚓</text></svg>">
+<style>
+:root {
+  --ink:        #08090c;
+  --parchment:  #d4c5a0;
+  --parchment2: #c8b890;
+  --gold:       #c8a040;
+  --gold-dim:   #6a4e18;
+  --teal:       #2a6a5a;
+  --rust:       #7a2818;
+  --fog:        rgba(180,200,210,0.06);
+  --gutter:     clamp(20px, 5vw, 80px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: 'IM Fell DW Pica', Georgia, serif;
+  font-size: clamp(16px, 1.6vw, 19px);
+  line-height: 1.95;
+  min-height: 100vh;
+  cursor: default;
+}
+
+/* ── Animated sea texture ────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 200% 80% at 50% 110%, rgba(12,40,60,0.6) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(20,50,40,0.25) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(30,20,10,0.3) 0%, transparent 50%);
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity: 0.4;
+}
+
+/* ── Nav ─────────────────────────────────────────────── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--gutter);
+  background: rgba(8,9,12,0.88);
+  border-bottom: 1px solid rgba(200,160,64,0.12);
+  backdrop-filter: blur(14px);
+  height: 56px;
+}
+.nav-brand {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 12px; letter-spacing: 0.2em;
+  color: rgba(200,160,64,0.7); text-decoration: none;
+}
+.nav-title {
+  font-family: 'Cinzel', serif;
+  font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(200,184,154,0.3);
+}
+.nav-back {
+  font-family: 'Cinzel', serif;
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(200,184,154,0.35); text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-back:hover { color: rgba(200,160,64,0.7); }
+
+/* ── Progress bar ────────────────────────────────────── */
+#progress-bar {
+  position: fixed; top: 56px; left: 0; height: 2px; z-index: 99;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  width: 0%; transition: width 0.1s linear;
+}
+
+/* ── Chapter nav sidebar ─────────────────────────────── */
+#chapters-nav {
+  position: fixed; top: 50%; right: 28px; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 14px; z-index: 50;
+}
+.ch-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  border: 1px solid rgba(200,160,64,0.3);
+  background: transparent; cursor: pointer;
+  transition: all 0.3s; position: relative;
+}
+.ch-dot.active {
+  background: var(--gold);
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(200,160,64,0.5);
+}
+.ch-dot:hover { border-color: var(--gold); }
+.ch-dot::after {
+  content: attr(data-label);
+  position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.15em;
+  color: rgba(200,160,64,0.6); white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.ch-dot:hover::after { opacity: 1; }
+
+/* ── Layout ──────────────────────────────────────────── */
+main {
+  position: relative; z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* ── Opening ─────────────────────────────────────────── */
+.opening {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 80px 0 60px;
+}
+.opening-sigil {
+  font-size: 48px; margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 1.4s 0.3s forwards;
+}
+.opening-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 10px; letter-spacing: 0.4em; text-transform: uppercase;
+  color: rgba(200,160,64,0.4);
+  opacity: 0; animation: fadeUp 1.2s 0.6s forwards;
+  margin-bottom: 16px;
+}
+.opening h1 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(26px, 5vw, 52px);
+  color: var(--gold);
+  line-height: 1.15;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 60px rgba(200,160,64,0.25);
+  opacity: 0; animation: fadeUp 1.2s 0.9s forwards;
+  margin-bottom: 12px;
+}
+.opening-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 11px; letter-spacing: 0.35em; text-transform: uppercase;
+  color: rgba(200,184,154,0.3);
+  opacity: 0; animation: fadeUp 1.2s 1.1s forwards;
+  margin-bottom: 40px;
+}
+.opening p {
+  font-size: clamp(14px,1.4vw,17px);
+  color: rgba(200,184,154,0.5);
+  font-style: italic; line-height: 2;
+  max-width: 480px;
+  opacity: 0; animation: fadeUp 1.2s 1.4s forwards;
+  margin-bottom: 48px;
+}
+.scroll-down {
+  font-family: 'Cinzel', serif;
+  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(200,184,154,0.2);
+  opacity: 0; animation: fadeUp 1s 2s forwards, bob 3s 3s infinite;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(16px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes bob {
+  0%,100%{ transform:translateY(0); }
+  50%    { transform:translateY(8px); }
+}
+
+/* ── Chapter ─────────────────────────────────────────── */
+.chapter {
+  padding: 100px 0 80px;
+  border-top: 1px solid rgba(200,160,64,0.08);
+  scroll-margin-top: 80px;
+}
+.chapter-header {
+  display: flex; flex-direction: column; align-items: flex-start;
+  margin-bottom: 52px;
+}
+.chapter-number {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(64px, 12vw, 120px);
+  color: rgba(200,160,64,0.06);
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  user-select: none;
+  margin-bottom: -16px;
+  margin-left: -4px;
+}
+.chapter-label {
+  font-family: 'Cinzel', serif;
+  font-size: 10px; letter-spacing: 0.4em; text-transform: uppercase;
+  color: var(--teal); margin-bottom: 10px;
+}
+.chapter-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(18px, 3.5vw, 30px);
+  color: var(--gold);
+  letter-spacing: 0.04em; line-height: 1.25;
+}
+.chapter-rule {
+  width: 60px; height: 1px;
+  background: linear-gradient(90deg, var(--gold-dim), transparent);
+  margin-top: 20px;
+}
+
+/* ── Prose ───────────────────────────────────────────── */
+.prose p {
+  margin-bottom: 1.6em;
+  color: rgba(200,184,154,0.82);
+  text-align: justify;
+  hyphens: auto;
+}
+.prose p:first-child::first-letter {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 4.2em;
+  float: left;
+  line-height: 0.78;
+  margin: 0.06em 0.1em 0 0;
+  color: var(--gold);
+  text-shadow: 0 0 30px rgba(200,160,64,0.3);
+}
+.prose em { color: rgba(200,184,154,0.95); font-style: italic; }
+.prose strong {
+  font-family: 'Cinzel', serif;
+  font-size: 0.88em; letter-spacing: 0.08em;
+  color: var(--gold); font-weight: 400; font-style: normal;
+}
+
+/* ── Pull quote ──────────────────────────────────────── */
+.pull-quote {
+  margin: 44px -40px;
+  padding: 28px 40px;
+  border-left: 2px solid var(--gold-dim);
+  background: rgba(200,160,64,0.04);
+  font-style: italic;
+  font-size: clamp(15px,1.5vw,18px);
+  color: rgba(200,184,154,0.7);
+  line-height: 2;
+  position: relative;
+}
+.pull-quote::before {
+  content: '\201C';
+  position: absolute; top: 10px; left: 16px;
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 48px; color: rgba(200,160,64,0.15);
+  line-height: 1;
+}
+
+/* ── Scene break ─────────────────────────────────────── */
+.scene-break {
+  display: flex; align-items: center; justify-content: center;
+  gap: 20px; margin: 44px 0;
+  opacity: 0.3;
+}
+.scene-break::before,.scene-break::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+.scene-break-glyph { font-size: 14px; color: var(--gold); }
+
+/* ── Chapter end ornament ────────────────────────────── */
+.chapter-end {
+  margin-top: 56px; text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase;
+  color: rgba(200,184,154,0.2);
+}
+
+/* ── Final page ──────────────────────────────────────── */
+.finale {
+  padding: 100px 0 160px;
+  text-align: center;
+  border-top: 1px solid rgba(200,160,64,0.08);
+}
+.finale-sigil { font-size: 36px; opacity: 0.4; margin-bottom: 28px; }
+.finale h2 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(16px,3vw,26px);
+  color: rgba(200,160,64,0.5);
+  letter-spacing: 0.06em; margin-bottom: 16px;
+}
+.finale p {
+  font-size: 14px; color: rgba(200,184,154,0.3);
+  font-style: italic; line-height: 2; max-width: 400px; margin: 0 auto 32px;
+}
+.back-link {
+  display: inline-block;
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: rgba(200,160,64,0.5);
+  text-decoration: none; border-bottom: 1px solid rgba(200,160,64,0.2);
+  padding-bottom: 2px; transition: all 0.2s;
+}
+.back-link:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+@media (max-width: 600px) {
+  #chapters-nav { display: none; }
+  .pull-quote { margin: 32px 0; }
+  .chapter-number { font-size: 72px; }
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav>
+  <a class="nav-brand" href="eldritch-tides-website.html">⚓ ELDRITCH TIDES</a>
+  <span class="nav-title">The Pale Meridian</span>
+  <a class="nav-back" href="eldritch-tides-website.html">← Back</a>
+</nav>
+
+<div id="chapters-nav">
+  <div class="ch-dot active" data-target="ch1" data-label="I · The Departure"></div>
+  <div class="ch-dot" data-target="ch2" data-label="II · The Merchant"></div>
+  <div class="ch-dot" data-target="ch3" data-label="III · Misthollow"></div>
+  <div class="ch-dot" data-target="ch4" data-label="IV · The Deep"></div>
+  <div class="ch-dot" data-target="ch5" data-label="V · Tideglass"></div>
+</div>
+
+<main>
+
+<!-- ── Opening ───────────────────────────────────────── -->
+<div class="opening">
+  <div class="opening-sigil">🌊</div>
+  <div class="opening-eyebrow">A Story of Eldritch Tides</div>
+  <h1>The Pale Meridian</h1>
+  <div class="opening-sub">Being the account of Captain Asha Morne · Year of the Drowned Bell</div>
+  <p>Five chapters in the log of a captain who sailed further than she should have, and found something looking back.</p>
+  <div class="scroll-down">read on ↓</div>
+</div>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- CHAPTER I                                            -->
+<!-- ════════════════════════════════════════════════════ -->
+<section class="chapter" id="ch1">
+  <div class="chapter-header">
+    <div class="chapter-number">I</div>
+    <div class="chapter-label">Chapter One</div>
+    <div class="chapter-title">The Departure</div>
+    <div class="chapter-rule"></div>
+  </div>
+  <div class="prose">
+    <p>The night before she sailed, Captain Asha Morne did not sleep. She sat at the edge of the dock in Port Harrow with her boots off and her feet dangling over black water, listening to the Pale Meridian shift against its moorings with the slow patience of a thing that had waited before and would wait again. The boat was old. Not elegantly old — not the kind of old that invited admiration — but functionally old, the way a good knife is old: worn down to its purpose, nothing wasted.</p>
+
+    <p>The harbor was quiet except for Chef Aldric's kitchen light burning across the square. She could smell something he was reducing — something oceanic and dark — and she thought that whatever it was, she wanted to be the one who brought him the thing that finished it. That was, she supposed, as good a reason to sail as any.</p>
+
+    <p>She had debts. Not the kind that men collect at knifepoint, but the quieter kind — promises made in better seasons when she'd been certain the sea would keep providing. The sea had not kept providing. Three weeks of common grouper and brine shrimp, and the harbormaster's ledger growing longer by the day. Harbormaster Voss had said nothing when she'd passed him that morning, which was somehow worse than if he'd said something.</p>
+
+    <div class="pull-quote">
+      "The compass had been drifting for three days. She'd been telling herself it was the iron in the rocks near the southern shoals. She knew, in the honest part of her that she rarely visited, that it was not the rocks."
+    </div>
+
+    <p>She pulled her boots back on at midnight, walked the gangplank, and checked the hull one last time by lamplight. The wood was sound. The hold was empty. The rod she'd inherited from her father — driftwood grip worn smooth by thirty years of hands — hung on its bracket beside the helm where it always hung. She would take it down tomorrow. She would find what Aldric needed, what Voss was owed, what the sea still had left to give.</p>
+
+    <p>At dawn she cast off. Port Harrow shrank behind her into a smear of lamplight and cooksmoke, and the open water began, and she was, as she always was the moment the dock disappeared, briefly, completely free.</p>
+
+    <p>She did not know yet what was watching her go.</p>
+  </div>
+  <div class="scene-break"><span class="scene-break-glyph">✦</span></div>
+  <div class="chapter-end">End of Chapter One</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- CHAPTER II                                           -->
+<!-- ════════════════════════════════════════════════════ -->
+<section class="chapter" id="ch2">
+  <div class="chapter-header">
+    <div class="chapter-number">II</div>
+    <div class="chapter-label">Chapter Two</div>
+    <div class="chapter-title">The Merchant</div>
+    <div class="chapter-rule"></div>
+  </div>
+  <div class="prose">
+    <p>She found the merchant vessel on the third day, drifting southeast of Crow Isle with its sails slack in the windless noon. It was a charter ship — the kind that ran between ports she'd never visited, crewed by men who didn't need to fish because they carried things that other men fished for. She pulled alongside with a wave and the merchant came to the rail, a broad-shouldered woman with sun-ruined skin and a ledger tucked under one arm.</p>
+
+    <p>They traded in the way of people who didn't entirely trust each other but had no profitable alternative. Asha gave her a crate of rock crab she'd pulled that morning. The merchant gave her a rod she'd sourced from somewhere south — <strong>ghost glass</strong>, she called it, the blank a pale resin that caught light like water. Better tension, the merchant said. Better feel. Asha didn't argue. She could tell by the weight that it was true.</p>
+
+    <p>There were notes in bottles, too. The merchant sold those. Asha bought one without opening it. She had a feeling, which she'd learned not to dismiss, that she would want something to read before the end of this voyage.</p>
+
+    <div class="scene-break"><span class="scene-break-glyph">✦</span></div>
+
+    <p>She fished all afternoon with the ghost-glass rod. The sea was the color of iron, and the clouds moved in from the northwest like a slow opinion. She caught a silver eel on the third cast — longer than her arm, the scales flickering between silver and something closer to light — and set it in the live tank, knowing Aldric would pay well for it. Then a midnight squid, ink-dark, that came up fighting and left a stain on the gunwale that looked, at a certain angle, like a face.</p>
+
+    <p>She did not look at that angle again.</p>
+
+    <p>By evening the weather had made up its mind. She could feel it before she could see it — a pressure behind the eyes, a restlessness in the hull's motion, the compass needle swinging a degree too far east and not entirely coming back. She'd seen worse. She told herself she'd seen worse. She went below and read the note from the bottle by lamplight while the Meridian began to pitch.</p>
+
+    <div class="pull-quote">
+      "The note said only: <em>Do not answer what calls from the water at night. It knows your name because you thought it.</em> Below that, in different handwriting, smaller and more careful: <em>I answered. I am still here. I am not sure that is a mercy.</em>"
+    </div>
+
+    <p>She folded the note and kept it. She put the lamp out. She listened to the sea do what the sea does, and she thought about what it means to be still here.</p>
+  </div>
+  <div class="scene-break"><span class="scene-break-glyph">✦</span></div>
+  <div class="chapter-end">End of Chapter Two</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- CHAPTER III                                          -->
+<!-- ════════════════════════════════════════════════════ -->
+<section class="chapter" id="ch3">
+  <div class="chapter-header">
+    <div class="chapter-number">III</div>
+    <div class="chapter-label">Chapter Three</div>
+    <div class="chapter-title">Misthollow</div>
+    <div class="chapter-rule"></div>
+  </div>
+  <div class="prose">
+    <p>Misthollow was not on any chart she trusted. It appeared on older ones — the handmade kind, vellum, the kind that folded wrong because the coastline didn't fit the paper — as a small notation: <em>port of debatable welcome</em>. She had always meant to go. She had always had a reason not to.</p>
+
+    <p>The storm pushed her east for six hours, and when it released her, the fog was already there, and Misthollow was already in it, waiting with the patience of a place that had outlasted everyone who'd been surprised to find it.</p>
+
+    <p>The village was real but unsteady, the way a reflection is real. The houses stood at angles that suggested they'd been built by people who understood shelter but had complicated feelings about permanence. The docks were sound. The harbor bell was cracked and rang flat. And on the breakwater, in the predawn grey, stood the witch — or so the other captains called her — a woman in practical waterproofs who smelled of brine and something older than brine.</p>
+
+    <p>She sold Asha a repair kit, a pouch of void morsel bait, and thirty minutes of conversation that Asha would spend the rest of the voyage trying to untangle. The witch did not volunteer her name. She said that the sea had been dreaming again, which meant the catches near the deep zones would be strange. She said that the thing which followed ships at night was not malevolent, exactly, but that it had no framework for what malevolence was, which amounted to the same thing in practice. She said Asha had good hands for the rod. She said this last thing the way a doctor says something to make you feel better before the difficult part.</p>
+
+    <div class="pull-quote">
+      "The witch's shop smelled like a library that had been sunk and recovered. On a shelf behind her, in a jar, something turned slowly in liquid that was slightly too dark to be water."
+    </div>
+
+    <p>Asha sold her cargo — the eel, the squid, a rock crab and a half-dozen ghost herring — and the witch's apprentice wrote the figures in a ledger without expression, as though the numbers meant something other than numbers. The gold was good. The weight of it in her hand was the realest thing that had happened in two days.</p>
+
+    <p>She left before full light. The fog closed behind the Meridian like a sentence ending. She didn't look back at Misthollow. She had the feeling it wouldn't look quite the same way twice.</p>
+  </div>
+  <div class="scene-break"><span class="scene-break-glyph">✦</span></div>
+  <div class="chapter-end">End of Chapter Three</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- CHAPTER IV                                           -->
+<!-- ════════════════════════════════════════════════════ -->
+<section class="chapter" id="ch4">
+  <div class="chapter-header">
+    <div class="chapter-number">IV</div>
+    <div class="chapter-label">Chapter Four</div>
+    <div class="chapter-title">The Deep</div>
+    <div class="chapter-rule"></div>
+  </div>
+  <div class="prose">
+    <p>The fourth night was when she first heard it.</p>
+
+    <p>She had anchored in open water — no land for eight miles in any direction, which was further from shore than she usually preferred — because the witch had said the eldritch catches came in the deep zones, and the deep zones were the unreachable ones, the places where the seafloor fell away to distances that had not been measured by anyone who came back. She was fishing by lantern. The void morsel bait hung in black water and she waited, the way fishing is mostly waiting, with the acceptance that this kind of waiting is not wasted time but a specific kind of attention.</p>
+
+    <p>The line went tight.</p>
+
+    <p>What she pulled up was called, in the catalogs she'd read in Port Harrow's harbormaster office on rainy afternoons, <em>The Pale Lantern</em>. It was the size of a large man's fist, and it gave off its own light — the pale, sourceless blue-white of deep water bioluminescence — and it looked at her with an eye that was not, she felt, entirely unaware of what it was looking at. She put it in the tank. It continued to glow. By its light she could see the other things in the tank, the ordinary catches, and they had moved as far from it as the glass would allow.</p>
+
+    <div class="scene-break"><span class="scene-break-glyph">✦</span></div>
+
+    <p>At the second hour past midnight she heard the sound. Not a voice. Not quite. It was the sound of something very large moving at the boundary between two things — between water and air, between one kind of dark and another. She felt it before she heard it: a vibration in the hull that moved up through the deck and into her boots and her knees and her spine and settled somewhere behind her sternum like a stone.</p>
+
+    <div class="pull-quote">
+      "She did not look over the rail. This was, she understood in the part of herself that had survived the last eight years of difficult water, the correct decision. You do not look at the thing that calls you by the frequency of your fear. You hold the wheel. You wait for dawn."
+    </div>
+
+    <p>Her panic had been climbing for an hour — she could feel it in the way the ship felt, the way her thoughts stuttered and repeated themselves, the way the compass had given up any pretense of pointing north and was simply slowly rotating like a man who has accepted he is lost. She breathed. She had a repair kit. She had gold. She had whatever was in the live tank, glowing steadily, patient as a question.</p>
+
+    <p>She did not fire her cannons. She had learned — the expensive way, off the coast somewhere she didn't go back to — that cannon fire in the dark at things that move at the edge of perception accomplishes nothing except making you feel briefly useful and then much more afraid. She waited. The hull vibrated. She breathed.</p>
+
+    <p>At four in the morning, the vibration stopped. The compass settled — not to north, but to something near enough. She gave the wheel five degrees west and sailed toward where she thought dawn would be.</p>
+
+    <p>Dawn came from exactly where she expected. This felt, improbably, like a victory.</p>
+  </div>
+  <div class="scene-break"><span class="scene-break-glyph">✦</span></div>
+  <div class="chapter-end">End of Chapter Four</div>
+</section>
+
+<!-- ════════════════════════════════════════════════════ -->
+<!-- CHAPTER V                                            -->
+<!-- ════════════════════════════════════════════════════ -->
+<section class="chapter" id="ch5">
+  <div class="chapter-header">
+    <div class="chapter-number">V</div>
+    <div class="chapter-label">Chapter Five</div>
+    <div class="chapter-title">Tideglass</div>
+    <div class="chapter-rule"></div>
+  </div>
+  <div class="prose">
+    <p>She came back to Port Harrow on the seventh day with a full hold and a hull that needed attention she couldn't give it on open water. The harbormaster was on the dock when she tied up, which meant he'd been watching for her, which meant something. She gave him what she owed him before he asked. He said nothing, which was his version of gratitude. She accepted it.</p>
+
+    <p>Chef Aldric was in his kitchen when she brought him the pale lantern — in its tank, still glowing, the eye still aware — and the silver eel and the midnight squid. He looked at the lantern for a long time without speaking. His apprentice came to the doorway and then left again quickly. Finally Aldric said: <em>I have been waiting for this. I don't know what I'll make with it yet. Come back in three days.</em></p>
+
+    <p>She came back in three days. He served her a dish she had no name for, that tasted the way the open water smells at four in the morning when the darkness is deep and the stars are clear and you are the only human thing in a very large amount of ocean. She ate it at the bar with no one else in the restaurant, and it was the best thing she had eaten in her adult life, and she was not entirely sure she felt better for having eaten it.</p>
+
+    <div class="scene-break"><span class="scene-break-glyph">✦</span></div>
+
+    <p>That evening she walked to the end of the dock and sat with her boots off again and her feet over black water. The Meridian was below her, rocking very slightly, the way it always rocked, the patient rock of a thing that has waited and would wait again.</p>
+
+    <p>She had enough gold to last through the season. The hull was repaired. The driftwood rod hung in its bracket. The ghost-glass rod hung beside it. In the morning she would check the weather and the provisions and the compass — which was, for now, pointing north, which she knew was temporary and trusted anyway.</p>
+
+    <div class="pull-quote">
+      "She thought about the sound she'd heard on the fourth night. The vibration in her sternum. The great darkness that had moved at the edge of perception and not arrived. She thought: <em>it knows where I sail. It has decided, for now, to let me.</em> She thought this was probably not the same as being safe. She thought she would go back anyway."
+    </div>
+
+    <p>The water was black and still. Somewhere out beyond the harbour mouth, in the open sea, the deep zones waited with their impossible catches and their sourceless cold light and whatever moved in them that had no framework for what it was.</p>
+
+    <p>She had good hands for the rod. The witch had said so. She had learned, slowly, over the eight years and the difficult water, that this kind of statement was both true and not the point — that having good hands was not why she sailed, but it was why she came back, and why she would come back again, and again, until she didn't.</p>
+
+    <p>She put her boots back on. She went below. She wrote the day's figures in the ledger, ate a bowl of something Aldric had given her for the journey she hadn't yet planned, and slept without dreaming of anything she remembered.</p>
+
+    <p>In the morning, she sailed.</p>
+  </div>
+  <div class="scene-break"><span class="scene-break-glyph">✦</span></div>
+  <div class="chapter-end">Fin</div>
+</section>
+
+<!-- ── Finale ─────────────────────────────────────────── -->
+<div class="finale">
+  <div class="finale-sigil">⚓</div>
+  <h2>The Pale Meridian</h2>
+  <p>Five chapters in the log of Captain Asha Morne. The sea keeps its own account.</p>
+  <a class="back-link" href="eldritch-tides-website.html">← Return to the Compendium</a>
+</div>
+
+</main>
+
+<script>
+// ── Reading progress bar ─────────────────────────────────────────────────
+const bar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+  bar.style.width = pct + '%';
+}, { passive: true });
+
+// ── Chapter nav dots ─────────────────────────────────────────────────────
+const dots = document.querySelectorAll('.ch-dot');
+const chapters = ['ch1','ch2','ch3','ch4','ch5'].map(id => document.getElementById(id));
+
+dots.forEach(dot => {
+  dot.addEventListener('click', () => {
+    const target = document.getElementById(dot.dataset.target);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Intersection observer for active dot
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const id = entry.target.id;
+      dots.forEach(d => d.classList.toggle('active', d.dataset.target === id));
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-80px 0px -40% 0px' });
+
+chapters.forEach(c => { if(c) obs.observe(c); });
+
+// ── Subtle parallax on drop caps and pull quotes ─────────────────────────
+document.addEventListener('scroll', () => {
+  const sy = window.scrollY;
+  document.querySelectorAll('.chapter-number').forEach((el, i) => {
+    el.style.transform = `translateY(${sy * 0.02 * (i % 2 ? 1 : -1)}px)`;
+  });
+}, { passive: true });
+</script>
+
+</body>
+</html>

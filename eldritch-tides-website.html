@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eldritch Tides — Compendium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:       #0a0d12;
+  --deep:      #060810;
+  --paper:     #c8b89a;
+  --parchment: #d4c5a4;
+  --gold:      #c8a040;
+  --gold-dim:  #7a5f22;
+  --teal:      #2a7a6a;
+  --teal-dim:  #1a4a40;
+  --rust:      #8a3020;
+  --fog:       rgba(140,160,180,0.08);
+  --border:    rgba(200,160,64,0.2);
+  --glow:      rgba(200,160,64,0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--deep);
+  color: var(--paper);
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.75;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Ocean noise background ─────────────────────────── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 120% 60% at 20% 80%, rgba(20,50,60,0.35) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 80% at 80% 20%, rgba(10,30,50,0.3) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 50% 50%, rgba(30,60,40,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Animated wave shimmer */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background: repeating-linear-gradient(
+    -15deg,
+    transparent,
+    transparent 80px,
+    rgba(40,80,80,0.04) 80px,
+    rgba(40,80,80,0.04) 82px
+  );
+  animation: drift 18s linear infinite;
+  pointer-events: none;
+}
+@keyframes drift { from { transform: translateX(0); } to { transform: translateX(164px); } }
+
+/* ── Layout ─────────────────────────────────────────── */
+#root { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Navigation ─────────────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; gap: 0;
+  padding: 0 32px;
+  background: rgba(6,8,16,0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.nav-brand {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 13px; letter-spacing: 0.18em;
+  color: var(--gold); text-decoration: none;
+  padding: 18px 0; margin-right: auto;
+  white-space: nowrap;
+}
+.nav-links { display: flex; gap: 0; }
+.nav-links a {
+  display: block; padding: 18px 20px;
+  color: rgba(200,184,154,0.6);
+  text-decoration: none;
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  border-bottom: 2px solid transparent;
+}
+.nav-links a:hover { color: var(--gold); border-bottom-color: var(--gold-dim); }
+.nav-links a.active { color: var(--gold); border-bottom-color: var(--gold); }
+.nav-play {
+  margin-left: 20px;
+  padding: 8px 20px;
+  background: rgba(200,160,64,0.12);
+  border: 1px solid rgba(200,160,64,0.35);
+  border-radius: 3px;
+  color: var(--gold);
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+.nav-play:hover { background: rgba(200,160,64,0.22); border-color: rgba(200,160,64,0.6); }
+
+/* ── Hero ────────────────────────────────────────────── */
+.hero {
+  min-height: 88vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 80px 24px 60px;
+  position: relative;
+}
+
+.hero-sigil {
+  width: 90px; height: 90px;
+  margin-bottom: 28px;
+  opacity: 0.85;
+  animation: pulse-sigil 6s ease-in-out infinite;
+}
+@keyframes pulse-sigil {
+  0%,100% { filter: drop-shadow(0 0 12px rgba(200,160,64,0.4)); }
+  50%      { filter: drop-shadow(0 0 28px rgba(200,160,64,0.7)); }
+}
+
+.hero h1 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(28px, 6vw, 64px);
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+  text-shadow: 0 0 60px rgba(200,160,64,0.3), 0 2px 4px rgba(0,0,0,0.8);
+  margin-bottom: 8px;
+}
+.hero-sub {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(11px, 1.8vw, 14px);
+  letter-spacing: 0.3em;
+  color: rgba(200,184,154,0.45);
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.hero p {
+  max-width: 540px;
+  font-size: 17px;
+  color: rgba(200,184,154,0.7);
+  font-style: italic;
+  line-height: 1.9;
+  margin-bottom: 44px;
+}
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.btn-primary {
+  padding: 13px 32px;
+  background: rgba(200,160,64,0.14);
+  border: 1px solid rgba(200,160,64,0.55);
+  border-radius: 3px;
+  color: var(--gold);
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.2em;
+  text-transform: uppercase; text-decoration: none; cursor: pointer;
+  transition: all 0.25s;
+}
+.btn-primary:hover { background: rgba(200,160,64,0.25); border-color: var(--gold); box-shadow: 0 0 20px rgba(200,160,64,0.2); }
+.btn-secondary {
+  padding: 13px 32px;
+  background: transparent;
+  border: 1px solid rgba(200,184,154,0.22);
+  border-radius: 3px;
+  color: rgba(200,184,154,0.55);
+  font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 0.2em;
+  text-transform: uppercase; text-decoration: none; cursor: pointer;
+  transition: all 0.25s;
+}
+.btn-secondary:hover { border-color: rgba(200,184,154,0.5); color: rgba(200,184,154,0.9); }
+
+.scroll-hint {
+  position: absolute; bottom: 32px;
+  font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.3em;
+  color: rgba(200,184,154,0.25); text-transform: uppercase;
+  animation: bob 3s ease-in-out infinite;
+}
+@keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
+/* ── Sections ────────────────────────────────────────── */
+section {
+  padding: 96px 0 80px;
+  border-top: 1px solid var(--border);
+}
+
+.section-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 10px; letter-spacing: 0.35em;
+  color: var(--teal); text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.section-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(20px, 4vw, 34px);
+  color: var(--gold);
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+}
+.section-lead {
+  max-width: 600px;
+  color: rgba(200,184,154,0.65);
+  font-style: italic;
+  font-size: 16px;
+  margin-bottom: 56px;
+  line-height: 1.9;
+}
+
+/* ── Divider ─────────────────────────────────────────── */
+.divider {
+  display: flex; align-items: center; gap: 16px;
+  margin: 40px 0;
+  opacity: 0.35;
+}
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:var(--gold-dim); }
+.divider-glyph { font-size: 14px; color: var(--gold); }
+
+/* ── Card grid ───────────────────────────────────────── */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.card {
+  background: rgba(10,16,24,0.7);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 28px;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  position: relative; overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  opacity: 0; transition: opacity 0.25s;
+}
+.card:hover { border-color: rgba(200,160,64,0.4); box-shadow: 0 4px 32px rgba(0,0,0,0.4); }
+.card:hover::before { opacity: 1; }
+.card-icon { font-size: 28px; margin-bottom: 14px; line-height: 1; }
+.card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 14px; letter-spacing: 0.1em;
+  color: var(--gold); margin-bottom: 10px;
+}
+.card-body { font-size: 14px; color: rgba(200,184,154,0.65); line-height: 1.75; }
+.card-tag {
+  display: inline-block; margin-top: 14px;
+  padding: 3px 10px;
+  background: rgba(42,122,106,0.15);
+  border: 1px solid rgba(42,122,106,0.3);
+  border-radius: 2px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px; letter-spacing: 0.1em;
+  color: var(--teal);
+}
+
+/* ── Controls table ──────────────────────────────────── */
+.controls-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-top: 32px;
+}
+.ctrl-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 18px;
+  background: rgba(10,16,24,0.6);
+  border: 1px solid var(--border); border-radius: 3px;
+}
+kbd {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 32px; height: 26px; padding: 0 8px;
+  background: rgba(200,160,64,0.1);
+  border: 1px solid rgba(200,160,64,0.35);
+  border-radius: 3px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px; color: var(--gold);
+  white-space: nowrap; flex-shrink: 0;
+}
+.ctrl-desc { font-size: 13px; color: rgba(200,184,154,0.7); }
+
+/* ── Fish catalog ────────────────────────────────────── */
+.fish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 32px; }
+.fish-card {
+  padding: 16px 18px;
+  background: rgba(10,16,24,0.6);
+  border: 1px solid var(--border); border-radius: 3px;
+  display: flex; align-items: center; gap: 14px;
+}
+.fish-icon { font-size: 22px; flex-shrink: 0; }
+.fish-info { flex: 1; min-width: 0; }
+.fish-name { font-size: 13px; color: var(--paper); font-family: 'Cinzel', serif; letter-spacing: 0.06em; }
+.fish-value { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--gold); margin-top: 2px; }
+.fish-type-fish    { border-left: 2px solid rgba(42,122,106,0.5); }
+.fish-type-rare    { border-left: 2px solid rgba(120,80,200,0.6); }
+.fish-type-eldritch{ border-left: 2px solid rgba(180,20,20,0.7); }
+
+/* ── Code blocks ─────────────────────────────────────── */
+pre, code {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+}
+pre {
+  background: rgba(4,8,16,0.9);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold-dim);
+  border-radius: 3px;
+  padding: 20px 24px;
+  overflow-x: auto;
+  color: rgba(200,184,154,0.85);
+  line-height: 1.7;
+  margin: 20px 0;
+  white-space: pre;
+}
+code { color: var(--gold); background: rgba(200,160,64,0.08); padding: 1px 5px; border-radius: 2px; }
+pre code { background: none; padding: 0; color: inherit; }
+
+.comment { color: rgba(120,140,120,0.7); }
+.kw      { color: #7aadcc; }
+.str     { color: #c8a060; }
+.fn      { color: #a0c080; }
+.num     { color: #e0a060; }
+
+/* ── Steps ───────────────────────────────────────────── */
+.steps { counter-reset: step; display: flex; flex-direction: column; gap: 24px; margin-top: 32px; }
+.step {
+  display: flex; gap: 22px;
+  padding: 24px 26px;
+  background: rgba(10,16,24,0.6);
+  border: 1px solid var(--border); border-radius: 4px;
+  counter-increment: step;
+}
+.step::before {
+  content: counter(step);
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 22px; color: var(--gold-dim);
+  min-width: 32px; line-height: 1.2;
+  opacity: 0.6;
+}
+.step-content h4 {
+  font-family: 'Cinzel', serif; font-size: 13px;
+  letter-spacing: 0.1em; color: var(--gold); margin-bottom: 8px;
+}
+.step-content p, .step-content ul { font-size: 14px; color: rgba(200,184,154,0.7); }
+.step-content ul { padding-left: 18px; }
+.step-content li { margin-bottom: 4px; }
+
+/* ── API reference ───────────────────────────────────── */
+.api-grid { display: grid; gap: 14px; margin-top: 28px; }
+.api-entry {
+  padding: 18px 22px;
+  background: rgba(10,16,24,0.6);
+  border: 1px solid var(--border); border-radius: 3px;
+}
+.api-sig {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px; color: #a0c080;
+  margin-bottom: 6px;
+}
+.api-sig .api-name { color: var(--gold); }
+.api-sig .api-param { color: rgba(200,184,154,0.7); }
+.api-desc { font-size: 13px; color: rgba(200,184,154,0.6); line-height: 1.6; }
+.api-events { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.api-event {
+  padding: 2px 8px;
+  background: rgba(42,122,106,0.12);
+  border: 1px solid rgba(42,122,106,0.25);
+  border-radius: 2px;
+  font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--teal);
+}
+
+/* ── Mod showcase ────────────────────────────────────── */
+.mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 32px; }
+.mod-card {
+  background: rgba(10,16,24,0.7);
+  border: 1px solid var(--border); border-radius: 4px;
+  overflow: hidden;
+}
+.mod-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+}
+.mod-icon { font-size: 30px; line-height: 1; }
+.mod-meta {}
+.mod-name { font-family: 'Cinzel', serif; font-size: 14px; color: var(--gold); letter-spacing: 0.08em; }
+.mod-version { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: rgba(200,184,154,0.35); margin-top: 2px; }
+.mod-body { padding: 18px 24px; }
+.mod-desc { font-size: 14px; color: rgba(200,184,154,0.65); font-style: italic; margin-bottom: 14px; line-height: 1.7; }
+.mod-features { list-style: none; padding: 0; }
+.mod-features li {
+  font-size: 13px; color: rgba(200,184,154,0.6);
+  padding: 4px 0; display: flex; align-items: baseline; gap: 8px;
+}
+.mod-features li::before { content: '—'; color: var(--gold-dim); flex-shrink: 0; }
+.mod-badge {
+  display: inline-block; margin-top: 14px;
+  padding: 3px 10px;
+  background: rgba(138,48,32,0.15);
+  border: 1px solid rgba(138,48,32,0.35);
+  border-radius: 2px;
+  font-family: 'Share Tech Mono', monospace; font-size: 10px; color: #c06040;
+}
+
+/* ── Source tree ─────────────────────────────────────── */
+.file-tree {
+  background: rgba(4,8,16,0.9);
+  border: 1px solid var(--border);
+  border-radius: 4px; overflow: hidden;
+  margin-top: 28px; font-family: 'Share Tech Mono', monospace;
+}
+.tree-header {
+  padding: 12px 20px;
+  background: rgba(200,160,64,0.06);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px; color: rgba(200,184,154,0.4);
+  letter-spacing: 0.15em; text-transform: uppercase;
+}
+.tree-body { padding: 16px 20px; }
+.tree-line { display: flex; align-items: center; gap: 0; }
+.tree-line a { text-decoration: none; }
+.tree-indent { display: inline-block; width: 20px; color: rgba(200,184,154,0.12); flex-shrink: 0; }
+.tree-connector { color: rgba(200,184,154,0.15); flex-shrink: 0; }
+.tree-dir  { color: var(--gold); font-size: 13px; padding: 2px 0; }
+.tree-file { color: rgba(200,184,154,0.6); font-size: 12px; padding: 1px 0; }
+.tree-file:hover { color: rgba(200,184,154,0.9); }
+.tree-desc { color: rgba(200,184,154,0.3); font-size: 11px; margin-left: 12px; }
+
+/* ── Footer ─────────────────────────────────────────── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 48px 24px;
+  text-align: center;
+}
+.footer-sigil { font-size: 24px; margin-bottom: 12px; opacity: 0.4; }
+.footer-text { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.25em; color: rgba(200,184,154,0.25); text-transform: uppercase; }
+
+/* ── Utilities ───────────────────────────────────────── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+.full-width-code { margin: 28px 0; }
+.warn-box {
+  padding: 16px 20px; margin: 20px 0;
+  background: rgba(138,48,32,0.1);
+  border: 1px solid rgba(138,48,32,0.3);
+  border-left: 3px solid var(--rust);
+  border-radius: 3px;
+  font-size: 13px; color: rgba(200,184,154,0.7);
+}
+.info-box {
+  padding: 16px 20px; margin: 20px 0;
+  background: rgba(42,122,106,0.1);
+  border: 1px solid rgba(42,122,106,0.3);
+  border-left: 3px solid var(--teal);
+  border-radius: 3px;
+  font-size: 13px; color: rgba(200,184,154,0.7);
+}
+
+@media (max-width: 700px) {
+  .controls-grid, .mod-grid, .two-col { grid-template-columns: 1fr; }
+  .nav-links a { padding: 18px 12px; font-size: 10px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#top">⚓ ELDRITCH TIDES</a>
+  <div class="nav-links">
+    <a href="#wiki">Wiki</a>
+    <a href="#quests">Quests</a>
+    <a href="#skills">Skills</a>
+    <a href="#source">Source</a>
+    <a href="#modding">Modding</a>
+    <a href="#mods">Mods</a>
+    <a href="#soundtrack">Soundtrack</a>
+    <a href="story.html" target="_blank" style="color:rgba(200,184,154,0.6)">Story ↗</a>
+    <a href="eldritch-tides-pirate-mod.html" target="_blank" style="color:rgba(200,80,60,0.6)">Pirate Mod ↗</a>
+    <a href="eldritch-tides-crabber-mod.html" target="_blank" style="color:rgba(42,138,112,0.6)">Crabber Mod ↗</a>
+  </div>
+</nav>
+
+<div id="root">
+
+<!-- ── HERO ──────────────────────────────────────────── -->
+<div class="hero" id="top">
+  <svg class="hero-sigil" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="45" cy="45" r="42" stroke="rgba(200,160,64,0.3)" stroke-width="1"/>
+    <circle cx="45" cy="45" r="34" stroke="rgba(200,160,64,0.15)" stroke-width="0.5"/>
+    <!-- Anchor -->
+    <path d="M45 18 L45 72 M33 28 Q45 22 57 28 M38 72 Q45 76 52 72" stroke="rgba(200,160,64,0.8)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="45" cy="20" r="4" fill="none" stroke="rgba(200,160,64,0.8)" stroke-width="1.5"/>
+    <!-- Compass points -->
+    <path d="M45 8 L45 14 M45 76 L45 82 M8 45 L14 45 M76 45 L82 45" stroke="rgba(200,160,64,0.3)" stroke-width="1"/>
+    <path d="M45 8 L47 14 L45 12 L43 14 Z" fill="rgba(200,160,64,0.5)"/>
+    <!-- Eye -->
+    <ellipse cx="45" cy="45" rx="6" ry="4" fill="none" stroke="rgba(200,160,64,0.5)" stroke-width="1"/>
+    <circle cx="45" cy="45" r="2" fill="rgba(200,160,64,0.4)"/>
+  </svg>
+
+  <div class="hero-sub">A nautical horror fishing game</div>
+  <h1>Eldritch Tides</h1>
+  <p>Sail the fog-haunted reaches of a dying sea. Fish its cursed depths. Trade, flee, or embrace the darkness below.</p>
+  <div class="hero-actions">
+<a class="btn-primary" href="#wiki">Read the Wiki</a>
+    <a class="btn-secondary" href="#modding">Add Mods</a>
+    <a class="btn-secondary" href="#soundtrack">Soundtrack</a>
+  </div>
+  <div class="scroll-hint">scroll to explore</div>
+</div>
+
+<!-- ── GETTING STARTED ───────────────────────────────── -->
+<section id="start" style="padding:48px 0 64px">
+  <div class="section-eyebrow">Cast Off</div>
+  <div class="section-title">How to Play</div>
+  <p class="section-lead">Eldritch Tides runs locally — no server required beyond a one-line command.</p>
+  <div class="two-col" style="gap:24px">
+    <div>
+      <h3 style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.12em;color:var(--gold);margin-bottom:14px">Linux / Mac</h3>
+      <pre style="margin:0">cd eldritch-tides/
+./serve.sh
+<span class="comment"># open http://localhost:8080</span>
+<span class="comment"># saves → saves/captain.json</span></pre>
+    </div>
+    <div>
+      <h3 style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.12em;color:var(--gold);margin-bottom:14px">Windows</h3>
+      <pre style="margin:0">Double-click serve.bat
+<span class="comment"># open http://localhost:8080</span></pre>
+    </div>
+  </div>
+  <div class="info-box" style="margin-top:20px;max-width:600px">
+    Requires Python 3 (ships with most systems). The game uses ES modules which browsers block from <code>file://</code> — the local server is the only requirement.
+  </div>
+</section>
+
+<!-- ── WIKI ──────────────────────────────────────────── -->
+<section id="wiki">
+  <div class="section-eyebrow">The Captain's Compendium</div>
+  <div class="section-title">Wiki</div>
+  <p class="section-lead">Everything you need to survive the Pale Meridian's first voyage.</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">⛵</div>
+      <div class="card-title">Sailing</div>
+      <div class="card-body">Hold <kbd>W</kbd> to thrust, <kbd>A</kbd>/<kbd>D</kbd> to steer. Your ship has momentum — plan your turns early. Hull integrity degrades in storms and from cannon fire. Watch the HUD.</div>
+      <span class="card-tag">sailing · physics</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎣</div>
+      <div class="card-title">Fishing Minigame</div>
+      <div class="card-body">Press <kbd>F</kbd> to cast. Hold <kbd>Space</kbd> to raise the zone, release to let it fall. Keep the fish icon inside the green zone — tension fills when you do. Equip rods and bait from inventory for bonuses.</div>
+      <span class="card-tag">fishing · minigame</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌊</div>
+      <div class="card-title">Weather & Panic</div>
+      <div class="card-body">Night raises your panic meter. At 100% you die. Storms boost eldritch fish rates but accelerate panic. Dock before dark or carry emergency repair kits. The monster spawns when panic exceeds 40 at night.</div>
+      <span class="card-tag">survival · horror</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚓</div>
+      <div class="card-title">Ports</div>
+      <div class="card-body"><strong>Port Harrow</strong> — starting port, sells cargo, 3⊕/HP repairs, Chef Aldric & Harbormaster Voss for quests. <strong>Misthollow</strong> — cursed village east, 2⊕/HP repairs, witch sells eldritch bait and lore.</div>
+      <span class="card-tag">ports · quests</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">💀</div>
+      <div class="card-title">The Monster</div>
+      <div class="card-body">It spawns at night when panic &gt; 40. Four phases: APPROACH → HUNT → LUNGE → RETREAT. Hull takes 18 damage on contact. Fire cannons to drive it back; it retreats after sustained hits. Despawns at dawn.</div>
+      <span class="card-tag">combat · boss</span>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔧</div>
+      <div class="card-title">Hull &amp; Repair</div>
+      <div class="card-body">Warnings fire at 50%, 25%, and 10% hull. At 0% the run ends — save is deleted. Repair at port (costs gold per HP), or use an Emergency Repair Kit at sea (<kbd>R</kbd>) for 25HP. Kits sold by merchants.</div>
+      <span class="card-tag">survival · economy</span>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-glyph">✦</span></div>
+
+  <!-- Controls -->
+  <div class="section-eyebrow" style="margin-top: 48px">Full Control Reference</div>
+  <div class="section-title" style="font-size: 22px">Controls</div>
+  <div class="controls-grid">
+    <div class="ctrl-row"><kbd>W</kbd><span class="ctrl-desc">Thrust forward</span></div>
+    <div class="ctrl-row"><kbd>A</kbd> / <kbd>D</kbd><span class="ctrl-desc">Steer left / right</span></div>
+    <div class="ctrl-row"><kbd>F</kbd><span class="ctrl-desc">Cast fishing line</span></div>
+    <div class="ctrl-row"><kbd>Space</kbd><span class="ctrl-desc">Reel / hold zone up</span></div>
+    <div class="ctrl-row"><kbd>C</kbd><span class="ctrl-desc">Fire cannons</span></div>
+    <div class="ctrl-row"><kbd>Q</kbd><span class="ctrl-desc">Talk to NPC / merchant</span></div>
+    <div class="ctrl-row"><kbd>E</kbd><span class="ctrl-desc">Dock at port</span></div>
+    <div class="ctrl-row"><kbd>R</kbd><span class="ctrl-desc">Use emergency repair kit</span></div>
+    <div class="ctrl-row"><kbd>Tab</kbd><span class="ctrl-desc">Open inventory</span></div>
+    <div class="ctrl-row"><kbd>M</kbd><span class="ctrl-desc">Toggle full map</span></div>
+    <div class="ctrl-row"><kbd>Esc</kbd><span class="ctrl-desc">Pause / resume</span></div>
+    <div class="ctrl-row"><kbd>S</kbd> <span style="font-size:11px;color:rgba(200,184,154,0.4)">in inv.</span><span class="ctrl-desc">Save game</span></div>
+  </div>
+
+  <div class="divider"><span class="divider-glyph">✦</span></div>
+
+  <!-- Fish catalog -->
+  <div class="section-eyebrow" style="margin-top: 48px">Field Notes</div>
+  <div class="section-title" style="font-size: 22px">Fish Catalog</div>
+  <div class="fish-grid">
+    <div class="fish-card fish-type-fish"><div class="fish-icon">🐟</div><div class="fish-info"><div class="fish-name">Common Grouper</div><div class="fish-value">30 ⊕ · common</div></div></div>
+    <div class="fish-card fish-type-fish"><div class="fish-icon">🦐</div><div class="fish-info"><div class="fish-name">Brine Shrimp ×4</div><div class="fish-value">14 ⊕ · common</div></div></div>
+    <div class="fish-card fish-type-fish"><div class="fish-icon">🦀</div><div class="fish-info"><div class="fish-name">Rock Crab</div><div class="fish-value">50 ⊕ · common</div></div></div>
+    <div class="fish-card fish-type-fish"><div class="fish-icon">🐠</div><div class="fish-info"><div class="fish-name">Ghost Herring ×6</div><div class="fish-value">22 ⊕ · common</div></div></div>
+    <div class="fish-card fish-type-rare"><div class="fish-icon">🐍</div><div class="fish-info"><div class="fish-name">Silver Eel</div><div class="fish-value">90 ⊕ · rare</div></div></div>
+    <div class="fish-card fish-type-rare"><div class="fish-icon">🦑</div><div class="fish-info"><div class="fish-name">Midnight Squid</div><div class="fish-value">125 ⊕ · rare</div></div></div>
+    <div class="fish-card fish-type-rare"><div class="fish-icon">🐡</div><div class="fish-info"><div class="fish-name">Abyss Angler</div><div class="fish-value">150 ⊕ · rare</div></div></div>
+    <div class="fish-card fish-type-eldritch"><div class="fish-icon">🪼</div><div class="fish-info"><div class="fish-name">The Pale Lantern</div><div class="fish-value">260 ⊕ · eldritch</div></div></div>
+    <div class="fish-card fish-type-eldritch"><div class="fish-icon">👁</div><div class="fish-info"><div class="fish-name">He Who Watches</div><div class="fish-value">480 ⊕ · eldritch</div></div></div>
+  </div>
+</section>
+
+
+<!-- ── QUESTS ────────────────────────────────────────── -->
+<section id="quests">
+  <div class="section-eyebrow">The Captain's Ledger</div>
+  <div class="section-title">Quests</div>
+  <p class="section-lead">Speak to NPCs at port with <kbd>Q</kbd>. Quests unlock in sequence — complete one to reveal the next.</p>
+
+  <div style="display:grid;gap:28px;margin-top:8px">
+
+    <!-- Chef Aldric -->
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:20px 28px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px">
+        <span style="font-size:32px">👨‍🍳</span>
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold);letter-spacing:0.08em">Chef Aldric</div>
+          <div style="font-size:12px;color:rgba(200,184,154,0.4);margin-top:2px;font-family:'Share Tech Mono',monospace">Head Chef · The Salted Meridian · Port Harrow</div>
+        </div>
+      </div>
+      <div style="padding:20px 28px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px">
+
+        <div style="padding:16px 18px;background:rgba(4,8,16,0.6);border:1px solid var(--border);border-radius:3px">
+          <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:0.06em;margin-bottom:8px">🍽 The Starter Course</div>
+          <div style="font-size:13px;color:rgba(200,184,154,0.6);line-height:1.7;margin-bottom:12px">Fresh ingredients for an amuse-bouche. Nothing glamorous — the sea's honest flavours.</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(200,184,154,0.5);margin-bottom:6px">REQUIRES</div>
+          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+            <span style="font-size:12px;color:rgba(200,184,154,0.7)">🐟 Common Grouper ×2</span>
+            <span style="font-size:12px;color:rgba(200,184,154,0.7)">🦐 Brine Shrimp ×1</span>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--gold)">REWARD: 180 ⊕ + unlocks Course Two</div>
+        </div>
+
+        <div style="padding:16px 18px;background:rgba(4,8,16,0.6);border:1px solid var(--border);border-radius:3px">
+          <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:0.06em;margin-bottom:8px">🦑 The Second Course</div>
+          <div style="font-size:13px;color:rgba(200,184,154,0.6);line-height:1.7;margin-bottom:12px">Rarer, stranger creatures for a signature main. The deep gives generously if you know how to ask.</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(200,184,154,0.5);margin-bottom:6px">REQUIRES</div>
+          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+            <span style="font-size:12px;color:rgba(200,184,154,0.7)">🦑 Midnight Squid ×2</span>
+            <span style="font-size:12px;color:rgba(200,184,154,0.7)">🐍 Silver Eel ×1</span>
+            <span style="font-size:12px;color:rgba(200,184,154,0.7)">🦀 Rock Crab ×2</span>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--gold)">REWARD: 420 ⊕ + unlocks Final Course</div>
+        </div>
+
+        <div style="padding:16px 18px;background:rgba(4,8,16,0.6);border:1px solid rgba(180,20,20,0.3);border-radius:3px;border-left:2px solid rgba(180,20,20,0.6)">
+          <div style="font-family:'Cinzel',serif;font-size:12px;color:#e06040;letter-spacing:0.06em;margin-bottom:8px">🪼 The Final Course</div>
+          <div style="font-size:13px;color:rgba(200,184,154,0.6);line-height:1.7;margin-bottom:12px">Aldric's masterpiece demands the truly uncanny. Only the bravest captains complete this table.</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(200,184,154,0.5);margin-bottom:6px">REQUIRES</div>
+          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+            <span style="font-size:12px;color:rgba(200,184,154,0.7)">🪼 The Pale Lantern ×1</span>
+            <span style="font-size:12px;color:rgba(200,184,154,0.7)">🐡 Abyss Angler ×1</span>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:#e08040">REWARD: 1,200 ⊕ · quest line complete</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Harbormaster Voss -->
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:20px 28px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px">
+        <span style="font-size:32px">⚓</span>
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:14px;color:var(--gold);letter-spacing:0.08em">Harbormaster Voss</div>
+          <div style="font-size:12px;color:rgba(200,184,154,0.4);margin-top:2px;font-family:'Share Tech Mono',monospace">Port Authority · Port Harrow</div>
+        </div>
+      </div>
+      <div style="padding:20px 28px">
+        <div style="padding:16px 18px;background:rgba(4,8,16,0.6);border:1px solid var(--border);border-radius:3px;max-width:400px">
+          <div style="font-family:'Cinzel',serif;font-size:12px;color:var(--gold);letter-spacing:0.06em;margin-bottom:8px">💀 Clear the Shipping Lanes</div>
+          <div style="font-size:13px;color:rgba(200,184,154,0.6);line-height:1.7;margin-bottom:12px">Pirates are disrupting trade. Voss needs someone willing to get their hands dirty.</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(200,184,154,0.5);margin-bottom:6px">REQUIRES</div>
+          <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">
+            <span style="font-size:12px;color:rgba(200,184,154,0.7)">💀 Pirates sunk ×3</span>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--gold)">REWARD: 600 ⊕</div>
+        </div>
+        <div class="info-box" style="margin-top:16px;max-width:500px">
+          Use <kbd>C</kbd> to fire cannons at pirates. Pirates become aggressive when you sail within ~700 units. They sink after enough cannonball hits.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── SKILLS ─────────────────────────────────────────── -->
+<section id="skills">
+  <div class="section-eyebrow">The Captain's Craft</div>
+  <div class="section-title">Skills</div>
+  <p class="section-lead">Three skills level from 1–99 on a RuneScape XP curve. Open the inventory (<kbd>Tab</kbd>) and switch to the Skills tab to track progress.</p>
+
+  <div class="card-grid" style="margin-top:8px">
+
+    <div class="card">
+      <div class="card-icon">🪝</div>
+      <div class="card-title">Fishing</div>
+      <div class="card-body" style="margin-bottom:14px">Gained by catching fish. Better rods and bait amplify XP per catch.</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <tbody>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace;width:40px">Lv 1</td><td style="color:rgba(200,184,154,0.6)">Casts the line.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 10</td><td style="color:rgba(200,184,154,0.6)">Rare catches +10% chance.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 25</td><td style="color:rgba(200,184,154,0.6)">Tension builds 15% slower.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 50</td><td style="color:rgba(200,184,154,0.6)">Eldritch chance doubled at night.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 75</td><td style="color:rgba(200,184,154,0.6)">Green zone widens by 20%.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 99</td><td style="color:rgba(200,184,154,0.6)">Master Angler — max catch quality.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">⚔️</div>
+      <div class="card-title">Combat</div>
+      <div class="card-body" style="margin-bottom:14px">Gained by sinking pirates and hitting the sea monster. Unlocks broadside upgrades.</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <tbody>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace;width:40px">Lv 1</td><td style="color:rgba(200,184,154,0.6)">Can fire cannons.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 10</td><td style="color:rgba(200,184,154,0.6)">Cannonballs deal +5 damage.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 25</td><td style="color:rgba(200,184,154,0.6)">Reload time −0.5s.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 50</td><td style="color:rgba(200,184,154,0.6)">Broadside fires 6 balls instead of 4.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 75</td><td style="color:rgba(200,184,154,0.6)">Pirates take double damage on sink.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 99</td><td style="color:rgba(200,184,154,0.6)">Dread Admiral — cannons never miss.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">⛵</div>
+      <div class="card-title">Sailing</div>
+      <div class="card-body" style="margin-bottom:14px">Gained passively while sailing. Higher levels reduce whirlpool danger and improve handling.</div>
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <tbody>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace;width:40px">Lv 1</td><td style="color:rgba(200,184,154,0.6)">Can navigate open water.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 10</td><td style="color:rgba(200,184,154,0.6)">Boat turns 10% faster.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 25</td><td style="color:rgba(200,184,154,0.6)">Hull repairs +10 on docking.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 50</td><td style="color:rgba(200,184,154,0.6)">Cargo weight penalty halved.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 75</td><td style="color:rgba(200,184,154,0.6)">Whirlpool pull reduced 30%.</td></tr>
+          <tr><td style="padding:5px 0;color:var(--gold);font-family:'Share Tech Mono',monospace">Lv 99</td><td style="color:rgba(200,184,154,0.6)">Grand Navigator — max sea mastery.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="info-box" style="margin-top:24px">
+    <strong style="color:var(--teal)">XP Curve:</strong> Eldritch Tides uses the RuneScape XP formula — each level requires roughly 10% more XP than the last. Level 99 requires approximately 13 million total XP. Eldritch catches give the most fishing XP; sinking the sea monster gives a large combat bonus.
+  </div>
+</section>
+
+<!-- ── SOURCE CODE ────────────────────────────────────── -->
+<section id="source">
+  <div class="section-eyebrow">Under the Hull</div>
+  <div class="section-title">Source Code</div>
+  <p class="section-lead">Eldritch Tides is a vanilla JS game split across 29 ES modules. No build tools, no framework dependencies.</p>
+
+  <div class="two-col">
+    <div>
+      <h3 style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.12em;color:var(--gold);margin-bottom:16px">Running Locally</h3>
+      <p style="font-size:14px;color:rgba(200,184,154,0.65);margin-bottom:16px">ES modules require HTTP — browsers block <code>file://</code> imports. Run a local server:</p>
+      <pre><span class="comment"># Linux / Mac</span>
+cd eldritch-tides/
+./serve.sh
+
+<span class="comment"># Windows</span>
+serve.bat
+
+<span class="comment"># Then open http://localhost:8080</span>
+<span class="comment"># Saves: saves/captain.json</span></pre>
+
+      <h3 style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.12em;color:var(--gold);margin:24px 0 16px">Save Files</h3>
+      <p style="font-size:14px;color:rgba(200,184,154,0.65);margin-bottom:14px">Saves are written to <code>saves/captain.json</code> — a plain JSON file you can back up, inspect, or share. The standalone HTML falls back to <code>localStorage</code>.</p>
+
+      <h3 style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.12em;color:var(--gold);margin:24px 0 16px">Building Standalone</h3>
+      <p style="font-size:14px;color:rgba(200,184,154,0.65);margin-bottom:14px">Bundle everything — including enabled mods — into one HTML file:</p>
+      <pre>python3 build.py
+<span class="comment"># → dist/eldritch-tides.html (no server needed)</span></pre>
+    </div>
+    <div>
+      <h3 style="font-family:'Cinzel',serif;font-size:13px;letter-spacing:0.12em;color:var(--gold);margin-bottom:16px">Architecture</h3>
+      <p style="font-size:14px;color:rgba(200,184,154,0.65);margin-bottom:16px">Each module has a single responsibility. Cross-module dependencies use explicit ES module imports.</p>
+      <div class="info-box">
+        <strong style="color:var(--teal)">Bundle strategy:</strong> <code>build.py</code> concatenates modules in dependency order, strips <code>import/export</code> keywords, and prepends a hoisted-globals block to avoid TDZ errors — producing a plain <code>&lt;script&gt;</code> with no module loader needed.
+      </div>
+    </div>
+  </div>
+
+  <!-- File tree -->
+  <div class="file-tree">
+    <div class="tree-header">eldritch-tides / project structure</div>
+    <div class="tree-body" style="font-size:13px;line-height:2">
+      <div class="tree-line"><span class="tree-dir">📁 src/</span></div>
+      <div class="tree-line"><span class="tree-indent">│ </span><span class="tree-dir">📁 core/</span><span class="tree-desc">engine, state, physics, renderer, save, constants, time, pause</span></div>
+      <div class="tree-line"><span class="tree-indent">│ </span><span class="tree-dir">📁 systems/</span><span class="tree-desc">fishing, combat, cannon, weather, quests, merchants, events, world…</span></div>
+      <div class="tree-line"><span class="tree-indent">│ </span><span class="tree-dir">📁 ui/</span><span class="tree-desc">hud, inventory, log, panels</span></div>
+      <div class="tree-line"><span class="tree-indent">│ </span><span class="tree-dir">📁 audio/</span><span class="tree-desc">sfx.js — Web Audio API synth SFX + procedural music</span></div>
+      <div class="tree-line"><span class="tree-indent">│ </span><span class="tree-dir">📁 mods/</span><span class="tree-desc">mod-loader.js — EldrTidesAPI, dynamic mod loading</span></div>
+      <div class="tree-line"><span class="tree-dir">📁 mods/</span><span class="tree-desc">installed mod folders go here</span></div>
+      <div class="tree-line"><span class="tree-indent">  </span><span class="tree-dir">📁 pirate-life/</span></div>
+      <div class="tree-line"><span class="tree-indent">  </span><span class="tree-dir">📁 crabber-life/</span></div>
+      <div class="tree-line" style="margin-top:6px"><span class="tree-file">⚓ main.js</span><span class="tree-desc">game loop, keyboard handler, module wiring</span></div>
+      <div class="tree-line"><span class="tree-file">📄 index.html</span><span class="tree-desc">dev entry point (use with local server)</span></div>
+      <div class="tree-line"><span class="tree-file">🔨 build.py</span><span class="tree-desc">bundles all modules + enabled mods into standalone HTML</span></div>
+      <div class="tree-line"><span class="tree-file">🐍 server.py</span><span class="tree-desc">game server — handles file saves at /save, /load</span></div>
+      <div class="tree-line"><span class="tree-file">🖥️  serve.sh</span><span class="tree-desc">starts server.py (Linux/Mac)</span></div>
+      <div class="tree-line"><span class="tree-file">🪟 serve.bat</span><span class="tree-desc">starts server.py (Windows)</span></div>
+      <div class="tree-line"><span class="tree-dir">📁 saves/</span><span class="tree-desc">captain.json written here on save</span></div>
+      <div class="tree-line"><span class="tree-dir">📁 audio/</span><span class="tree-desc">tideglass-drift.mp3 and future tracks</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MODDING ────────────────────────────────────────── -->
+<section id="modding">
+  <div class="section-eyebrow">The Shipwright's Manual</div>
+  <div class="section-title">Writing a Mod</div>
+  <p class="section-lead">Mods are plain JavaScript files that receive the <code>EldrTidesAPI</code> object. No build step, no bundler, no framework.</p>
+
+  <!-- Steps -->
+  <div class="steps">
+    <div class="step">
+      <div class="step-content">
+        <h4>Create the Mod Folder</h4>
+        <p>Create a folder inside <code>mods/</code> with your mod's ID as the name:</p>
+        <pre>mods/
+  my-mod/
+    mod.json
+    mod.js</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-content">
+        <h4>Write mod.json</h4>
+        <pre>{
+  <span class="str">"id"</span>:          <span class="str">"my-mod"</span>,
+  <span class="str">"name"</span>:        <span class="str">"My Mod"</span>,
+  <span class="str">"version"</span>:     <span class="str">"1.0.0"</span>,
+  <span class="str">"entry"</span>:       <span class="str">"mod.js"</span>,
+  <span class="str">"description"</span>: <span class="str">"What your mod does."</span>
+}</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-content">
+        <h4>Write mod.js</h4>
+        <p>Export a default function that receives the API. Everything your mod does goes inside it:</p>
+        <pre><span class="kw">export default function</span> <span class="fn">MyMod</span>(api) {
+
+  <span class="comment">// Register a new fish species</span>
+  api.<span class="fn">registerFish</span>({
+    name: <span class="str">'Void Carp'</span>,
+    icon: <span class="str">'🪸'</span>,
+    type: <span class="str">'eldritch'</span>,
+    value: <span class="num">400</span>,
+    spd:   <span class="num">3.5</span>,
+  });
+
+  <span class="comment">// Add an item to merchant stock</span>
+  api.<span class="fn">registerMerchantStock</span>(stock => {
+    stock.push({
+      id: <span class="str">'void_lure'</span>, icon: <span class="str">'🌑'</span>, name: <span class="str">'Void Lure'</span>,
+      rarity: <span class="str">'rare'</span>, type: <span class="str">'bait'</span>,
+      desc: <span class="str">'Draws eldritch fish from the deep.'</span>,
+      price: <span class="num">180</span>, qty: <span class="num">2</span>,
+    });
+    <span class="kw">return</span> stock;
+  });
+
+  <span class="comment">// React to game events</span>
+  api.<span class="fn">onEvent</span>(<span class="str">'catch'</span>, fish => {
+    <span class="kw">if</span> (fish.type === <span class="str">'eldritch'</span>) {
+      api.<span class="fn">log</span>(<span class="str">'The void stirs beneath the hull...'</span>, <span class="str">'ev-eldritch'</span>);
+    }
+  });
+
+  <span class="comment">// Hook into the game loop</span>
+  api.<span class="fn">onEvent</span>(<span class="str">'update'</span>, (dt) => {
+    <span class="comment">// dt = delta time in seconds</span>
+    <span class="comment">// window.GAME has full game state</span>
+  });
+
+  <span class="comment">// Draw onto the canvas</span>
+  api.<span class="fn">onEvent</span>(<span class="str">'draw'</span>, ({ ctx, W, H }) => {
+    <span class="comment">// ctx = CanvasRenderingContext2D</span>
+    <span class="comment">// window._toScreen(wx, wy) → [sx, sy]</span>
+  });
+}</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-content">
+        <h4>Enable the Mod</h4>
+        <p>Add your mod's ID to <code>mods/index.json</code>:</p>
+        <pre>[<span class="str">"my-mod"</span>]</pre>
+        <p style="margin-top:12px">Multiple mods:</p>
+        <pre>[<span class="str">"pirate-life"</span>, <span class="str">"crabber-life"</span>, <span class="str">"my-mod"</span>]</pre>
+        <div class="info-box" style="margin-top:16px">
+          <strong style="color:var(--teal)">Dev server:</strong> refresh the browser — mods are loaded via <code>fetch</code> at runtime.<br>
+          <strong style="color:var(--teal)">Standalone build:</strong> run <code>python3 build.py</code> to bake enabled mods into the HTML.
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-content">
+        <h4>Disable a Mod</h4>
+        <p>Remove it from <code>mods/index.json</code>:</p>
+        <pre>[] <span class="comment">// empty array = all mods disabled</span></pre>
+        <p style="margin-top:12px">Then rebuild or refresh. The mod folder stays in place — just not loaded.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-glyph">✦</span></div>
+
+  <!-- API Reference -->
+  <div class="section-eyebrow" style="margin-top:48px">Full Reference</div>
+  <div class="section-title" style="font-size:22px">EldrTidesAPI</div>
+
+  <div class="api-grid">
+    <div class="api-entry">
+      <div class="api-sig">api.<span class="api-name">registerFish</span>(<span class="api-param">fishDef</span>)</div>
+      <div class="api-desc">Add a new fish to the catch pool. Fields: <code>name</code>, <code>icon</code>, <code>type</code> (<code>'fish'</code>|<code>'rare'</code>|<code>'eldritch'</code>|<code>'crab'</code>), <code>value</code> (gold), <code>spd</code> (fishing difficulty 0.5–4.0).</div>
+    </div>
+    <div class="api-entry">
+      <div class="api-sig">api.<span class="api-name">registerItem</span>(<span class="api-param">itemDef</span>)</div>
+      <div class="api-desc">Add an item to <code>ITEM_CATALOG</code>. Appears in inventory and can be distributed via merchant stock hooks. Fields: <code>id</code>, <code>name</code>, <code>icon</code>, <code>type</code>, <code>desc</code>, <code>effect</code>.</div>
+    </div>
+    <div class="api-entry">
+      <div class="api-sig">api.<span class="api-name">registerQuest</span>(<span class="api-param">questDef</span>)</div>
+      <div class="api-desc">Add a quest to the quest board. Fields: <code>id</code>, <code>name</code>, <code>npc</code>, <code>requirements</code> (array of <code>{ fishName, qty }</code>), <code>reward</code> (gold), <code>desc</code>.</div>
+    </div>
+    <div class="api-entry">
+      <div class="api-sig">api.<span class="api-name">registerMerchantStock</span>(<span class="api-param">fn</span>)</div>
+      <div class="api-desc">Hook into merchant stock generation. <code>fn</code> receives the current stock array and must return the (optionally modified) array. Called each time a merchant spawns.</div>
+    </div>
+    <div class="api-entry">
+      <div class="api-sig">api.<span class="api-name">registerIsland</span>(<span class="api-param">islandDef</span>)</div>
+      <div class="api-desc">Add a named island to the world. Fields: <code>wx</code>, <code>wy</code>, <code>r</code> (radius), <code>type</code>, <code>label</code>. Appears on the minimap once discovered.</div>
+    </div>
+    <div class="api-entry">
+      <div class="api-sig">api.<span class="api-name">log</span>(<span class="api-param">msg, cls</span>)</div>
+      <div class="api-desc">Write a line to the Captain's Log. CSS classes: <code>'ev-success'</code> (green), <code>'ev-warn'</code> (amber), <code>'ev-danger'</code> (red), <code>'ev-system'</code> (muted), <code>'ev-eldritch'</code> (purple).</div>
+    </div>
+    <div class="api-entry">
+      <div class="api-sig">api.<span class="api-name">onEvent</span>(<span class="api-param">event, callback</span>)</div>
+      <div class="api-desc">
+        Subscribe to a game event. Multiple mods can subscribe to the same event.
+        <div class="api-events">
+          <span class="api-event">update(dt)</span>
+          <span class="api-event">draw({ctx,W,H})</span>
+          <span class="api-event">keydown({code})</span>
+          <span class="api-event">init</span>
+          <span class="api-event">catch(fish)</span>
+          <span class="api-event">dock</span>
+          <span class="api-event">death</span>
+          <span class="api-event">levelup</span>
+          <span class="api-event">daybreak</span>
+          <span class="api-event">nightfall</span>
+        </div>
+        Return <code>true</code> from a <code>keydown</code> handler to consume the event (prevents the base game from also handling it).
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-glyph">✦</span></div>
+
+  <!-- Globals reference -->
+  <div class="section-eyebrow" style="margin-top:48px">Window Globals</div>
+  <div class="section-title" style="font-size:22px">Available at Runtime</div>
+  <p style="font-size:14px;color:rgba(200,184,154,0.65);margin-bottom:20px">These are exposed on <code>window</code> and accessible from any mod's <code>update</code> or <code>draw</code> handler:</p>
+
+  <div class="api-grid" style="grid-template-columns:1fr 1fr">
+    <div class="api-entry"><div class="api-sig"><span class="api-name">window.GAME</span></div><div class="api-desc">Full game state object: <code>x</code>, <code>y</code>, <code>hull</code>, <code>gold</code>, <code>cargo[]</code>, <code>panic</code>, <code>isNight</code>, <code>day</code>, and more.</div></div>
+    <div class="api-entry"><div class="api-sig"><span class="api-name">window.MERCHANTS</span></div><div class="api-desc">Array of active merchant ship objects with position, state, and inventory.</div></div>
+    <div class="api-entry"><div class="api-sig"><span class="api-name">window.CANNONBALLS</span></div><div class="api-desc">Player's active cannonball array. Check for collisions with custom entities.</div></div>
+    <div class="api-entry"><div class="api-sig"><span class="api-name">window.PIRATE_BALLS</span></div><div class="api-desc">Active enemy cannonballs. Push to this array to fire at the player.</div></div>
+    <div class="api-entry"><div class="api-sig"><span class="api-name">window._toScreen(wx, wy)</span></div><div class="api-desc">Convert world coordinates to screen pixel coordinates for drawing. Returns <code>[sx, sy]</code>.</div></div>
+    <div class="api-entry"><div class="api-sig"><span class="api-name">window._spawnSplash(wx, wy, col, r)</span></div><div class="api-desc">Spawn a water splash particle effect at world coordinates with given colour and radius.</div></div>
+    <div class="api-entry"><div class="api-sig"><span class="api-name">window.SFX</span></div><div class="api-desc">Sound effects object: <code>.cannon()</code>, <code>.dock()</code>, <code>.catchSound()</code>, <code>.warning()</code>, <code>.hit()</code>, <code>.splash()</code>.</div></div>
+    <div class="api-entry"><div class="api-sig"><span class="api-name">window._addLog(msg, cls)</span></div><div class="api-desc">Direct log function (same as <code>api.log</code> but synchronous — use inside <code>update</code> handlers).</div></div>
+    <div class="api-entry"><div class="api-sig"><span class="api-name">window.WORLD_OBJECTS</span></div><div class="api-desc">Array of world POIs: wrecks, kelp, buoys, stacks, caves. Each has <code>wx</code>, <code>wy</code>, <code>type</code>, <code>r</code>.</div></div>
+    <div class="api-entry"><div class="api-sig"><span class="api-name">window.ISLANDS</span></div><div class="api-desc">Array of island definitions: <code>wx</code>, <code>wy</code>, <code>r</code>, <code>type</code>, <code>label</code>. Useful for proximity checks.</div></div>
+  </div>
+
+  <div class="warn-box" style="margin-top:28px">
+    <strong>⚠ Limitation:</strong> Mods share the same global scope in the standalone build. Avoid naming variables the same as core game constants (<code>GAME</code>, <code>WEATHER</code>, <code>PIRATES</code>, etc.). Prefix your mod's state with a unique identifier.
+  </div>
+</section>
+
+<!-- ── MODS ───────────────────────────────────────────── -->
+<section id="mods">
+  <div class="section-eyebrow">The Mod Locker</div>
+  <div class="section-title">Included Mods</div>
+  <p class="section-lead">Two mods ship with the game. Enable them individually or together in <code>mods/index.json</code>.</p>
+
+  <div class="mod-grid">
+    <div class="mod-card">
+      <div class="mod-header">
+        <div class="mod-icon">☠️</div>
+        <div class="mod-meta">
+          <div class="mod-name">Pirate Life</div>
+          <div class="mod-version">v1.0.0 · pirate-life</div>
+        </div>
+      </div>
+      <div class="mod-body">
+        <div class="mod-desc">Turn the tables. You're not defending against pirates — you are the pirate. Raid charter ships for gold, build a wanted level, and survive the Navy fleet sent to hunt you down.</div>
+        <ul class="mod-features">
+          <li>Q near merchant opens Trade / Raid panel</li>
+          <li>Each raid raises wanted level 1–5 ★</li>
+          <li>Navy ships spawn faster and harder as stars climb</li>
+          <li>Sink a Navy ship: bounty gold + wanted level drops</li>
+          <li>B at port to bribe harbourmaster per star</li>
+          <li>Forged Papers in merchant stock at ★2+</li>
+          <li>Wanted 1–2 decays naturally after 90s clean sailing</li>
+        </ul>
+        <pre style="margin-top:16px;font-size:12px"><span class="comment">// Enable in mods/index.json:</span>
+[<span class="str">"pirate-life"</span>]</pre>
+      </div>
+    </div>
+
+    <div class="mod-card">
+      <div class="mod-header">
+        <div class="mod-icon">🦀</div>
+        <div class="mod-meta">
+          <div class="mod-name">The Simple Life of a Crabber</div>
+          <div class="mod-version">v1.0.0 · crabber-life</div>
+        </div>
+      </div>
+      <div class="mod-body">
+        <div class="mod-desc">A passive, RuneScape-style fishing layer. Drop crab pots and sail away. Come back when they're full. No minigame — just patience, good spots, and the occasional crab incident.</div>
+        <ul class="mod-features">
+          <li>G drops a pot at your position; G near a pot hauls it</li>
+          <li>Pots fill passively over 45–90s</li>
+          <li>Kelp beds (+60%), wrecks (+40%), buoys (+30%) boost fill rate</li>
+          <li>Deep water unlocks King Crab, Sailfish, Sea Turtle</li>
+          <li>8% haul chance: crab incident deals hull damage</li>
+          <li>Pots despawn after 5 min if abandoned</li>
+          <li>Crabber's Kit upgrade (merchant) expands to 8 pots</li>
+        </ul>
+        <pre style="margin-top:16px;font-size:12px"><span class="comment">// Enable in mods/index.json:</span>
+[<span class="str">"crabber-life"</span>]</pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top:28px">
+    Both mods can run simultaneously: <code>["pirate-life", "crabber-life"]</code>. Drop pots while evading the Navy. The crabs don't care about your wanted level.
+  </div>
+</section>
+
+<!-- ── SOUNDTRACK ───────────────────────────────────────── -->
+<section id="soundtrack">
+  <div class="section-eyebrow">From the Deep</div>
+  <div class="section-title">Soundtrack</div>
+  <p class="section-lead">Original music written for the voyage. The game layers a procedural ambient drone beneath the tracks — tension builds with panic, storm intensity darkens the harmony.</p>
+
+  <div style="max-width:680px">
+
+    <!-- Tideglass Drift -->
+    <div style="background:rgba(10,16,24,0.8);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:20px">
+      <div style="padding:28px 32px;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+        <!-- Waveform visualiser placeholder -->
+        <div id="waveform-vis" style="flex-shrink:0;width:80px;height:80px;position:relative">
+          <svg viewBox="0 0 80 80" style="width:100%;height:100%">
+            <circle cx="40" cy="40" r="38" fill="none" stroke="rgba(200,160,64,0.15)" stroke-width="1"/>
+            <circle cx="40" cy="40" r="30" fill="none" stroke="rgba(200,160,64,0.08)" stroke-width="1"/>
+            <text x="40" y="46" text-anchor="middle" font-size="22" fill="rgba(200,160,64,0.6)">🌊</text>
+          </svg>
+          <!-- Spinning ring when playing -->
+          <svg id="spin-ring" viewBox="0 0 80 80" style="position:absolute;inset:0;width:100%;height:100%;display:none">
+            <circle cx="40" cy="40" r="38" fill="none" stroke="rgba(200,160,64,0.5)" stroke-width="1.5"
+              stroke-dasharray="60 180" stroke-linecap="round">
+              <animateTransform attributeName="transform" type="rotate" from="0 40 40" to="360 40 40" dur="3s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Cinzel',serif;font-size:18px;color:var(--gold);letter-spacing:0.06em;margin-bottom:4px">Tideglass Drift</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(200,184,154,0.35);margin-bottom:14px">2:13 · loops · plays while sailing</div>
+
+          <!-- Custom player -->
+          <div style="display:flex;align-items:center;gap:12px">
+            <button id="track-btn" onclick="toggleTrack()"
+              style="width:40px;height:40px;border-radius:50%;background:rgba(200,160,64,0.12);border:1px solid rgba(200,160,64,0.4);color:var(--gold);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0">
+              ▶
+            </button>
+            <div style="flex:1">
+              <div id="track-progress-bar" style="height:3px;background:rgba(200,184,154,0.1);border-radius:2px;cursor:pointer;position:relative" onclick="seekTrack(event)">
+                <div id="track-progress-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));border-radius:2px;transition:width 0.5s linear;pointer-events:none"></div>
+                <div id="track-thumb" style="position:absolute;top:50%;right:auto;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:var(--gold);left:0%;display:none;pointer-events:none"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:6px">
+                <span id="track-time" style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(200,184,154,0.35)">0:00</span>
+                <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(200,184,154,0.25)">2:13</span>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+              <span style="font-size:12px;opacity:0.4">🔈</span>
+              <input type="range" min="0" max="100" value="75" oninput="setTrackVol(this.value)"
+                style="width:60px;accent-color:var(--gold);cursor:pointer">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:0 32px 20px">
+        <div style="font-size:13px;color:rgba(200,184,154,0.5);font-style:italic;line-height:1.7">
+          Written to sit beneath the procedural ambient layer — the synth drone shifts with storm intensity and panic while Tideglass Drift carries the melodic thread across calmer waters.
+        </div>
+      </div>
+    </div>
+
+    <!-- How music works in game -->
+    <div class="info-box">
+      <strong style="color:var(--teal)">In-game:</strong> Music starts on first keypress. The procedural engine layers sine-wave drones, filtered noise, and plucked melody notes that respond to weather, panic level, and time of day. Tideglass Drift plays looped on top at 75% volume — drop your own MP3 into <code>audio/</code> and update the filename in <code>main.js</code>.
+    </div>
+  </div>
+</section>
+
+</div><!-- /root -->
+
+<footer>
+  <div class="footer-sigil">⚓</div>
+  <div class="footer-text">Eldritch Tides — Open Source · Vanilla JS · No Dependencies</div>
+</footer>
+
+<script>
+// Active nav link tracking
+const sections = document.querySelectorAll('section[id], div[id="top"]');
+const navLinks  = document.querySelectorAll('.nav-links a');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(a => {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id);
+      });
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-80px 0px -40% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// Subtle parallax on hero sigil
+const sigil = document.querySelector('.hero-sigil');
+document.addEventListener('mousemove', e => {
+  if (!sigil) return;
+  const cx = window.innerWidth/2, cy = window.innerHeight/2;
+  const dx = (e.clientX - cx) / cx * 8;
+  const dy = (e.clientY - cy) / cy * 8;
+  sigil.style.transform = `translate(${dx}px, ${dy}px)`;
+});
+</script>
+
+<script>
+// ── Tideglass Drift player ───────────────────────────────────────────
+let _audio = null;
+let _playing = false;
+
+function getAudio(){
+  if(!_audio){
+    // Src will be set to the embedded base64 or a relative path
+    _audio = new Audio();
+    _audio.loop = true;
+    _audio.volume = 0.75;
+    // Try relative path first (works if MP3 is alongside the HTML)
+    _audio.src = 'audio/tideglass-drift.mp3';
+    _audio.addEventListener('timeupdate', updateProgress);
+    _audio.addEventListener('error', () => {
+      document.getElementById('track-btn').textContent = '✗';
+      document.getElementById('track-btn').title = 'Audio file not found';
+      document.getElementById('track-btn').style.opacity = '0.3';
+    });
+  }
+  return _audio;
+}
+
+function toggleTrack(){
+  const a = getAudio();
+  const btn = document.getElementById('track-btn');
+  const ring = document.getElementById('spin-ring');
+  const thumb = document.getElementById('track-thumb');
+  if(_playing){
+    a.pause();
+    _playing = false;
+    btn.textContent = '▶';
+    btn.style.background = 'rgba(200,160,64,0.12)';
+    if(ring) ring.style.display = 'none';
+    if(thumb) thumb.style.display = 'none';
+  } else {
+    a.play().then(()=>{
+      _playing = true;
+      btn.textContent = '⏸';
+      btn.style.background = 'rgba(200,160,64,0.22)';
+      if(ring) ring.style.display = 'block';
+      if(thumb) thumb.style.display = 'block';
+    }).catch(()=>{
+      btn.textContent = '▶';
+    });
+  }
+}
+
+function updateProgress(){
+  if(!_audio) return;
+  const pct = (_audio.currentTime / _audio.duration * 100) || 0;
+  const fill = document.getElementById('track-progress-fill');
+  const thumb = document.getElementById('track-thumb');
+  const time = document.getElementById('track-time');
+  if(fill) fill.style.width = pct + '%';
+  if(thumb) thumb.style.left = pct + '%';
+  if(time){
+    const s = Math.floor(_audio.currentTime);
+    time.textContent = Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0');
+  }
+}
+
+function seekTrack(e){
+  if(!_audio || !_audio.duration) return;
+  const bar = document.getElementById('track-progress-bar');
+  const rect = bar.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  _audio.currentTime = pct * _audio.duration;
+}
+
+function setTrackVol(v){
+  if(_audio) _audio.volume = v / 100;
+}
+</script>
+
+</body>
+</html>

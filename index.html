@@ -496,6 +496,7 @@ serve.bat
         </div>
       </div>
     </div>
+    <div id="track-status" style="padding:6px 28px 0;font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(200,120,60,0.8);min-height:20px"></div>
     <div class="track-bottom">Written to sit beneath the procedural ambient layer — the synth drone shifts with storm intensity while Tideglass Drift carries the melodic thread across calmer waters.</div>
   </div>
   <div class="info-box" style="margin-top:20px"><strong>In-game:</strong> Music starts on first keypress. Drop your own MP3 into <code>audio/</code> and update the filename in <code>main.js</code>.</div>
@@ -517,8 +518,40 @@ const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)links
 secs.forEach(s=>obs.observe(s));
 if(window.matchMedia('(hover:hover)').matches){const sg=document.querySelector('.hero-sigil');document.addEventListener('mousemove',e=>{if(!sg)return;sg.style.transform=`translate(${(e.clientX-window.innerWidth/2)/window.innerWidth*8}px,${(e.clientY-window.innerHeight/2)/window.innerHeight*8}px)`;});}
 let _audio=null,_playing=false;
-function getAudio(){if(!_audio){_audio=new Audio();_audio.loop=true;_audio.volume=0.75;_audio.src='audio/tideglass-drift.mp3';_audio.addEventListener('timeupdate',updateProgress);_audio.addEventListener('error',()=>{const b=document.getElementById('track-btn');if(b){b.textContent='✗';b.style.opacity='0.3';}});} return _audio;}
-function toggleTrack(){const a=getAudio(),b=document.getElementById('track-btn'),r=document.getElementById('spin-ring'),th=document.getElementById('track-thumb');if(_playing){a.pause();_playing=false;b.textContent='▶';b.style.background='rgba(200,160,64,0.12)';if(r)r.style.display='none';if(th)th.style.display='none';}else{a.play().then(()=>{_playing=true;b.textContent='⏸';b.style.background='rgba(200,160,64,0.22)';if(r)r.style.display='block';if(th)th.style.display='block';}).catch(()=>{b.textContent='▶';});}}
+function setTrackStatus(msg){const el=document.getElementById('track-status');if(el)el.textContent=msg;}
+function getAudio(){
+  if(!_audio){
+    _audio=new Audio();
+    _audio.loop=true;
+    _audio.volume=0.75;
+    _audio.src='audio/tideglass-drift.mp3';
+    _audio.addEventListener('timeupdate',updateProgress);
+    _audio.addEventListener('canplaythrough',()=>setTrackStatus(''));
+    _audio.addEventListener('error',()=>{
+      const b=document.getElementById('track-btn');
+      if(b){b.textContent='▶';b.style.opacity='0.4';}
+      setTrackStatus('Place tideglass-drift.mp3 in the audio/ folder alongside this file.');
+    });
+  }
+  return _audio;
+}
+function toggleTrack(){
+  const a=getAudio(),b=document.getElementById('track-btn'),r=document.getElementById('spin-ring'),th=document.getElementById('track-thumb');
+  if(_playing){
+    a.pause();_playing=false;b.textContent='▶';b.style.background='rgba(200,160,64,0.12)';
+    if(r)r.style.display='none';if(th)th.style.display='none';
+  }else{
+    setTrackStatus('Loading...');
+    a.play().then(()=>{
+      _playing=true;b.textContent='⏸';b.style.background='rgba(200,160,64,0.22)';
+      if(r)r.style.display='block';if(th)th.style.display='block';
+      setTrackStatus('');
+    }).catch(err=>{
+      b.textContent='▶';
+      setTrackStatus(err.name==='NotSupportedError'?'Place tideglass-drift.mp3 in the audio/ folder.':'Playback blocked — try clicking again.');
+    });
+  }
+}
 function updateProgress(){if(!_audio)return;const p=(_audio.currentTime/_audio.duration*100)||0,f=document.getElementById('track-progress-fill'),th=document.getElementById('track-thumb'),t=document.getElementById('track-time');if(f)f.style.width=p+'%';if(th)th.style.left=p+'%';if(t){const s=Math.floor(_audio.currentTime);t.textContent=Math.floor(s/60)+':'+(s%60).toString().padStart(2,'0');}}
 function seekTrack(e){if(!_audio||!_audio.duration)return;const b=document.getElementById('track-progress-bar'),r=b.getBoundingClientRect();_audio.currentTime=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*_audio.duration;}
 function setTrackVol(v){if(_audio)_audio.volume=v/100;}
